@@ -16,7 +16,8 @@ public class Carona {
 	private String destino;
 	private LocalDate data;
 	private LocalTime hora;
-	private int vagas;	
+	private int vagas;
+	private String idUsuario;
 	
 	/**
 	 * Construtor padrão.
@@ -82,5 +83,21 @@ public class Carona {
 	 */
 	public int getVagas() {
 		return vagas;
+	}	
+
+	/**
+	 * 
+	 * @return id do usuário
+	 */
+	public String getIdUsuario() {
+		return idUsuario;
 	}
+
+	/**
+	 * 
+	 * @param idUsuario id do usuário
+	 */
+	public void setIdUsuario(String idUsuario) {
+		this.idUsuario = idUsuario;
+	}	
 }

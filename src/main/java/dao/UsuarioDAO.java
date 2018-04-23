@@ -1,7 +1,9 @@
 package dao;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -9,9 +11,7 @@ import org.apache.log4j.Logger;
 import model.Usuario;
 
 /**
- * Classe responsável por representar um banco de dados. Ela possui um map, onde a chave vai ser o id do usuário
- * e o objeto usuario estará armazenado no valor. Todos os valores são armazenados apenas em tempo de
- * execução.
+ * Classe responsável por gerenciar as operações da tabela usuario do banco de dados.
  * 
  * @author Yorras Gomes, Fábio Dantas
  *
@@ -21,9 +21,10 @@ public class UsuarioDAO {
 	private static final Logger logger = LogManager.getLogger(UsuarioDAO.class);
 		
 	private static UsuarioDAO instanciaUnica = null;
-
-	private Map<String, Usuario> usuarios = new HashMap<String, Usuario>();
 	
+	/**
+	 * Construtor padrão.
+	 */
 	private UsuarioDAO(){
 		
 	}
@@ -43,14 +44,26 @@ public class UsuarioDAO {
 	}
 	
 	/**
-	 * Recebe um usuário e o armazena na base de dados do sistema.
+	 * Recebe um usuário e o armazena no banco de dados do sistema.
 	 * 
 	 * @param usuario objeto usuario
+	 * @throws SQLException 
 	 */
-	public void cadastrarUsuario(Usuario usuario){
+	public void cadastrarUsuario(Usuario usuario) throws SQLException{
 		logger.info("Cadastrando usuario: " + usuario.getNome());
 		
-		usuarios.put((usuarios.size()+1)+"", usuario);
+		Connection conexao = new ConnectionFactory().getConnection();		
+		String sql = "INSERT INTO usuario " + "(login,senha,nome,endereco,email) "
+				+ "values (?,?,?,?,?)";		
+		PreparedStatement stmt = conexao.prepareStatement(sql);
+		stmt.setString(1, usuario.getNomeLogin());
+		stmt.setString(2, usuario.getSenha());
+		stmt.setString(3, usuario.getNome());
+		stmt.setString(4, usuario.getEndereco());
+		stmt.setString(5, usuario.getEmail());
+		stmt.execute();
+		stmt.close();		
+		conexao.close();		
 	}
 	
 	/**
@@ -59,43 +72,36 @@ public class UsuarioDAO {
 	 * @param login login do usuário
 	 * @param senha senha do usuário
 	 * @return id da sessão do usuário
+	 * @throws SQLException 
 	 */
-	public String abrirSessao(String login, String senha){
-		logger.info("Abrindo sessão login: " + login);
+	public String abrirSessao(String login, String senha) throws SQLException{
+		logger.info("Abrindo sessão login: " + login);		
 		
-		for(String key: usuarios.keySet()){
-			Usuario usuario = usuarios.get(key);
-			if(usuario.getNomeLogin().equals(login)){
-				if(usuario.getSenha().equals(senha)){
-					return key;
-				}
-				else{
-					logger.error("Não foi possível abrir sessão. Senha incorreta. " + senha);
-					return "Senha Incorreta";
-				}
-			}
-		}
-		logger.error("Não foi possível abrir sessão. Login não existe. " + login);
-		return "Usuario Inexistente";
-	}
+		String sessao = "";		
+		Connection conexao = new ConnectionFactory().getConnection();
+		String sql = "SELECT id FROM usuario WHERE login = '" + login + "'";
+		PreparedStatement stmt = conexao.prepareStatement(sql);
+		ResultSet rs = stmt.executeQuery();		
+		while(rs.next()){
+			sessao = rs.getString("id");
+		}		
+		stmt.execute();
+		stmt.close();
+		conexao.close();		
+		return sessao;
+	}	
 	
 	/**
 	 * Recebe o login do usuário e retorna o nome dele.
 	 * 
 	 * @param login login do usuário
 	 * @return nome do usuário
+	 * @throws SQLException 
 	 */
-	public String nomeUsuario(String login){
-		logger.info("Retornando nome do usuário - login: " + login);
+	public String nomeUsuario(String login) throws SQLException{
+		logger.info("Retornando nome do usuário - login: " + login);		
 		
-		for(String key: usuarios.keySet()){
-			Usuario usuario = usuarios.get(key);
-			if(usuario.getNomeLogin().equals(login)){
-				return usuario.getNome();
-			}
-		}
-		logger.error("Não foi possível retornar o nome do usuário. Login não existe. " + login);
-		return "Login não existe.";
+		return retornaInformacaoUsuario(login, "nome");
 	}
 	
 	/**
@@ -103,18 +109,49 @@ public class UsuarioDAO {
 	 * 
 	 * @param login login do usuário
 	 * @return endereço do usuário
+	 * @throws SQLException 
 	 */
-	public String enderecoUsuario(String login){
-		logger.info("Retornando endereço do usuário - login: " + login);
+	public String enderecoUsuario(String login) throws SQLException{
+		logger.info("Retornando endereço do usuário - login: " + login);	
 		
-		for(String key: usuarios.keySet()){
-			Usuario usuario = usuarios.get(key);
-			if(usuario.getNomeLogin().equals(login)){
-				return usuario.getEndereco();
-			}
-		}
-		logger.error("Não foi possível retornar o endereço do usuário. Login não existe. " + login);
-		return "Login não existe.";
+		return retornaInformacaoUsuario(login, "endereco");
+	}
+	
+	/**
+	 * Recebe o login do usuário e retorna o email dele.
+	 * 
+	 * @param login login do usuario
+	 * @return email do usuário
+	 * @throws SQLException
+	 */
+	public String emailUsuario(String login) throws SQLException{
+		logger.info("Retornando email do usuário - login: " + login);	
+		
+		return retornaInformacaoUsuario(login, "email");
+	}
+	
+	/**
+	 * Recebe o login do usuário e o nome da coluna da tabela usuario onde a informação está armazenada
+	 * no banco de dados. Por fim, retorna a informação dessa coluna.
+	 * 
+	 * @param login login do usuário
+	 * @param coluna uma coluna equivalente da tabela usuario no banco de dados. Exemplo: nome, endereco, email.
+	 * @return a informação armazenada da coluna.
+	 * @throws SQLException
+	 */
+	private String retornaInformacaoUsuario(String login, String coluna) throws SQLException{
+		String informacaoRetornada = "";		
+		Connection conexao = new ConnectionFactory().getConnection();
+		String sql = "SELECT " + coluna + " FROM usuario WHERE login = '" + login + "'";
+		PreparedStatement stmt = conexao.prepareStatement(sql);
+		ResultSet rs = stmt.executeQuery();		
+		while(rs.next()){
+			informacaoRetornada = rs.getString(coluna);
+		}		
+		stmt.execute();
+		stmt.close();
+		conexao.close();		
+		return informacaoRetornada;
 	}
 	
 	/**
@@ -122,17 +159,12 @@ public class UsuarioDAO {
 	 * 
 	 * @param email email do usuário
 	 * @return true = cadastrado, false = não cadastrado
+	 * @throws SQLException 
 	 */
-	public boolean emailEstaCadastrado(String email){
-		logger.info("Verificando se email já está cadastrado - email: " + email);
-		
-		for(String key: usuarios.keySet()){
-			Usuario usuario = usuarios.get(key);
-			if(usuario.getEmail().equals(email)){
-				return true;
-			}
-		}
-		return false;
+	public boolean emailEstaCadastrado(String email) throws SQLException{
+		logger.info("Verificando se email já está cadastrado - email: " + email);		
+
+		return verificaInformacaoUsuario(email, "email");
 	}
 	
 	/**
@@ -140,27 +172,115 @@ public class UsuarioDAO {
 	 * 
 	 * @param login login do usuário
 	 * @return true = login existe, false = login não existe
+	 * @throws SQLException 
 	 */
-	public boolean loginExiste(String login){
+	public boolean loginExiste(String login) throws SQLException{
 		logger.info("Verificando se o login já existe - login: " + login);
 		
-		for(String key: usuarios.keySet()){
-			Usuario usuario = usuarios.get(key);
-			if(usuario.getNomeLogin().equals(login)){
-				return true;
-			}
-		}
-		return false;
+		return verificaInformacaoUsuario(login, "login");
+	}
+	
+	/**
+	 * Recebe a senha e verifica se ela confere com a senha do login equivalente.
+	 * 
+	 * @param login login do usuário
+	 * @param senha senha do usuário
+	 * @return true = senha está correta, false = senha está incorreta
+	 * @throws SQLException
+	 */
+	public boolean senhaExiste(String login, String senha) throws SQLException{
+		logger.info("Verificando se a senha está correta - login: " + login);
+		Connection conexao = new ConnectionFactory().getConnection();
+		String sql = "SELECT login FROM usuario WHERE login = '" + login + "' AND senha = '" + senha + "'";
+		PreparedStatement stmt = conexao.prepareStatement(sql);
+		ResultSet rs = stmt.executeQuery();		
+		boolean resultado = rs.next();		
+		stmt.execute();
+		stmt.close();
+		conexao.close();		
+		return resultado;
 	}
 	
 	/**
 	 * Recebe o id da sessão e verifica se ela é válida, ou seja, se o id da sessão existe na base de dados.
 	 * 
 	 * @param idSessao id da sessão do usuário
-	 * @return true =  sessão válida, false = sessão inválida
+	 * @return true = sessão válida, false = sessão inválida
+	 * @throws SQLException 
 	 */
-	public boolean verificaSessao(String idSessao){
+	public boolean verificaSessao(String idSessao) throws SQLException{
 		logger.info("Verificando se a sessão é válida - id da sessão: " + idSessao);
-		return usuarios.containsKey(idSessao);
+		
+		return verificaInformacaoUsuario(idSessao, "id");
+	}
+	
+	/**
+	 * Recebe uma informação, que pode ser o email, login ou id, e a coluna onde a informação está armazenada
+	 * no banco de dados. Por fim, retorna se a informação existe ou não.
+	 * 
+	 * @param informacao informação do email, login ou id.
+	 * @param coluna uma coluna equivalente da tabela usuário no banco de daos. Exemplo: email, login, id.
+	 * @return true = informação existe, false = informação não existe
+	 * @throws SQLException
+	 */
+	private boolean verificaInformacaoUsuario(String informacao, String coluna) throws SQLException{
+		Connection conexao = new ConnectionFactory().getConnection();
+		String sql = "SELECT " + coluna + " FROM usuario WHERE " + coluna + " = '" + informacao + "'";
+		PreparedStatement stmt = conexao.prepareStatement(sql);
+		ResultSet rs = stmt.executeQuery();		
+		boolean resultado = rs.next();		
+		stmt.execute();
+		stmt.close();
+		conexao.close();		
+		return resultado;
+	}
+	
+	/**
+	 * Recebe o id da sessão e o login do usuário e retorna toda a informação do perfil do usuário.
+	 * 
+	 * @param idSessao id da sessão do usuário
+	 * @param login login do usuário
+	 * @return objeto usuario contendo as informações do perfil.
+	 * @throws Exception
+	 */
+	public Usuario perfil(String idSessao, String login) throws Exception{		
+		Usuario usuario = null;		
+		Connection conexao = new ConnectionFactory().getConnection();
+		String sql = "SELECT * FROM usuario WHERE id = '" + idSessao + "' OR login = '" + login + "'";
+		PreparedStatement stmt = conexao.prepareStatement(sql);
+		ResultSet rs = stmt.executeQuery();		
+		while(rs.next()){
+			String loginUsuario = rs.getString("login");
+			String senha = rs.getString("senha");
+			String nome = rs.getString("nome");
+			String endereco = rs.getString("endereco");
+			String email = rs.getString("email");
+			usuario = new Usuario(loginUsuario, senha, nome, endereco, email);
+		}		
+		stmt.execute();
+		stmt.close();
+		conexao.close();		
+		return usuario;
+	}
+	
+	/**
+	 * Apaga todos os usuários do banco de dados.
+	 * 
+	 * @throws SQLException
+	 */
+	public void apagarUsuarios() throws SQLException{
+		Connection conexao1 = new ConnectionFactory().getConnection();
+		String sql1 = "DELETE FROM usuario WHERE id > 0";
+		PreparedStatement stmt1 = conexao1.prepareStatement(sql1);
+		stmt1.execute();
+		stmt1.close();		
+		conexao1.close();
+		
+		Connection conexao2 = new ConnectionFactory().getConnection();
+		String sql2 = "ALTER TABLE usuario AUTO_INCREMENT = 1";
+		PreparedStatement stmt2 = conexao2.prepareStatement(sql2);
+		stmt2.execute();
+		stmt2.close();		
+		conexao2.close();
 	}
 }

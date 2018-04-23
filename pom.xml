@@ -8,7 +8,7 @@
   <packaging>jar</packaging>
 
   <name>caronas</name>
-  <url>http://maven.apache.org</url>
+  <url>https://github.com/FabioDantasG/ProjetoCarona</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -25,6 +25,11 @@
     	<groupId>log4j</groupId>
     	<artifactId>log4j</artifactId>
     	<version>1.2.17</version>
-	</dependency>    
+	</dependency>
+	<dependency>
+    	<groupId>mysql</groupId>
+    	<artifactId>mysql-connector-java</artifactId>
+    	<version>5.1.23</version>
+	</dependency>	  
   </dependencies>
 </project>
