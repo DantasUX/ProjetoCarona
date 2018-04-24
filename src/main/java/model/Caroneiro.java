@@ -1,11 +1,13 @@
 package model;
 
+import java.sql.SQLException;
 import java.util.Map;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import dao.CaronaDAO;
+import dao.SolicitacaoDAO;
 
 /**
  * Classe responsável por cuidar das funções que são de um caroneiro.
@@ -33,12 +35,14 @@ public class Caroneiro {
 		
 		CaronaDAO dao = CaronaDAO.getInstance();
 		if(origem.equals("-") || origem.equals("()") || origem.equals("!") || origem.equals("!?")){
-			logger.error("Origem inválido - origem: " + origem);
-			throw new Exception("Origem inválida");
+			Exception e = new Exception("Origem inválida");
+			logger.error("Origem inválido - origem: " + origem, e);
+			throw e;
 		}
 		if(destino.equals(".") || destino.equals("()") || destino.equals("!?")){
-			logger.error("Destino inválido - destino: " + destino);
-			throw new Exception("Destino inválido");
+			Exception e = new Exception("Destino inválido");
+			logger.error("Destino inválido - destino: " + destino, e);
+			throw e;
 		}
 		return dao.localizarCarona(origem, destino);
 	}
@@ -57,16 +61,19 @@ public class Caroneiro {
 		
 		CaronaDAO dao = CaronaDAO.getInstance();
 		if(idCarona == null || idCarona.equals("")){
-			logger.error("Identificador do carona é inválido - id carona: " + idCarona);
-			throw new Exception("Identificador do carona é inválido");
+			Exception e = new Exception("Identificador do carona é inválido");
+			logger.error("Identificador do carona é inválido - id carona: " + idCarona, e);
+			throw e;
 		}
 		else if(atributo == null || atributo.equals("")){
-			logger.error("Atributo inválido - atributo: " + atributo);
-			throw new Exception("Atributo inválido");
+			Exception e = new Exception("Atributo inválido");
+			logger.error("Atributo inválido - atributo: " + atributo, e);
+			throw e;
 		}
 		else if(!dao.verificaCarona(idCarona)){
-			logger.error("Item inexistente - id carona: " + idCarona);
-			throw new Exception("Item inexistente");
+			Exception e = new Exception("Item inexistente");
+			logger.error("Item inexistente - id carona: " + idCarona, e);
+			throw e;
 		}		
 		else if(atributo.equals("origem")){
 			return dao.origemCarona(idCarona);
@@ -81,8 +88,9 @@ public class Caroneiro {
 			return dao.vagasCarona(idCarona)+"";
 		}
 		else{
-			logger.error("Atributo inexistente - atributo: " + atributo);
-			throw new Exception("Atributo inexistente");
+			Exception e = new Exception("Atributo inexistente");
+			logger.error("Atributo inexistente - atributo: " + atributo, e);
+			throw e;
 		}
 	}	
 	
@@ -99,12 +107,14 @@ public class Caroneiro {
 		
 		CaronaDAO dao = CaronaDAO.getInstance();
 		if(idCarona == null){
-			logger.error("Trajeto Inválida - id carona: " + idCarona);
-			throw new Exception("Trajeto Inválida");
+			Exception e = new Exception("Trajeto Inválida");
+			logger.error("Trajeto Inválida - id carona: " + idCarona, e);
+			throw e;
 		}
 		if(idCarona.equals("") || !dao.verificaCarona(idCarona)){
-			logger.error("Trajeto inexistente - id carona: " + idCarona);
-			throw new Exception("Trajeto Inexistente");
+			Exception e = new Exception("Trajeto Inexistente");
+			logger.error("Trajeto inexistente - id carona: " + idCarona, e);
+			throw e;
 		}		
 		return dao.trajetoCarona(idCarona);
 	}
@@ -122,13 +132,64 @@ public class Caroneiro {
 		
 		CaronaDAO dao = CaronaDAO.getInstance();
 		if(idCarona == null){
-			logger.error("Carona Inválida - id carona: " + idCarona);
-			throw new Exception("Carona Inválida");
+			Exception e = new Exception("Carona Inválida");
+			logger.error("Carona Inválida - id carona: " + idCarona, e);
+			throw e;
 		}
 		if(idCarona.equals("") || !dao.verificaCarona(idCarona)){
-			logger.error("Carona inexistente - id carona: " + idCarona);
-			throw new Exception("Carona Inexistente");
+			Exception e = new Exception("Carona Inexistente");
+			logger.error("Carona inexistente - id carona: " + idCarona, e);
+			throw e;
 		}		
 		return dao.informacoesCarona(idCarona);
 	}
+	
+	/**
+	 * Recebe o id da sessão do usuário, o id da carona e os pontos de encontro sugeridos, faz a verificação
+	 * necessária, cria uma solicitação e retorna o id dessa solicitação.
+	 * 
+	 * @param idSessao id da sessão do usuário
+	 * @param idCarona id da carona
+	 * @param pontos pontos de encontro sugeridos pelo usuário
+	 * @return id da solicitação
+	 * @throws Exception
+	 */
+	public String sugerirPontoEncontro(String idSessao, String idCarona, String pontos) throws Exception{
+		if(pontos.equals("")){
+			Exception e = new Exception("Ponto Inválido");
+			logger.error("Ponto Inválido - pontos: " + pontos, e);
+			throw e;
+		}
+		SolicitacaoDAO s = SolicitacaoDAO.getInstance();
+		return s.sugerirPontoEncontro(idSessao, idCarona, pontos);
+	}
+	
+	/**
+	 * Recebe o id da sessão do usuário, o id da carona e o ponto sugerido pelo usuário. Se algum ponto de
+	 * encontro da resposta do motorista for o mesmo do caroneiro, e se o caroneiro ainda querer a carona ele
+	 * pode solicitar uma vaga dizendo o ponto para encontro. Por fim, retorna o id da solicitação.
+	 * 
+	 * @param idSessao id da sessão do usuário
+	 * @param idCarona id da carona
+	 * @param ponto ponto de encontro sugerido pelo usuário
+	 * @return id da solicitação
+	 * @throws SQLException
+	 */
+	public String solicitarVagaPontoEncontro(String idSessao, String idCarona, String ponto) throws SQLException{
+		SolicitacaoDAO s = SolicitacaoDAO.getInstance();
+		return s.solicitarVagaPontoEncontro(idSessao, idCarona, ponto);
+	}
+	
+	/**
+	 * Recebe o id da sessão do usuário e o id da carona, solicita uma vaga na carona e retorna o id da solicitação.
+	 * 
+	 * @param idSessao id da sessão do usuário
+	 * @param idCarona id da carona
+	 * @return id da solicitação
+	 * @throws SQLException
+	 */
+	public String solicitarVaga(String idSessao, String idCarona) throws SQLException{
+		SolicitacaoDAO s = SolicitacaoDAO.getInstance();
+		return s.solicitarVaga(idSessao, idCarona);
+	}	
 }
