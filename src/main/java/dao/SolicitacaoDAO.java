@@ -558,18 +558,42 @@ public class SolicitacaoDAO {
 	}
 	
 	/**
-	 * Recebe o id da carona e o login do caroneiro e verifica se a carona possui vaga.
+	 * Recebe o id da carona e o login do caroneiro e verifica se o caroneiro possui vaga na carona.
 	 * 
 	 * @param idCarona id da carona
 	 * @param loginCaroneiro login do caroneiro
 	 * @return true = possui vaga, false = não possui vaga
 	 * @throws SQLException
 	 */
-	public boolean vagaUsuarioCarona(String idCarona, String loginCaroneiro) throws SQLException{
+	public boolean vagaUsuarioCaronaPorLogin(String idCarona, String loginCaroneiro) throws SQLException{
 		boolean possuiVaga = false;		
 		Connection conexao = new ConnectionFactory().getConnection();		
 		String sql = "SELECT solicitacao.id FROM solicitacao, usuario WHERE carona = '" + idCarona + "'"
 				+ " AND usuario.login = '" + loginCaroneiro + "'"
+				+ " AND solicitacao.caroneiro = usuario.id AND solicitacaoAceita = true AND solicitacaoRejeitada = false"
+				+ " AND solicitacaoDesistida = false";
+		PreparedStatement stmt = conexao.prepareStatement(sql);
+		ResultSet rs = stmt.executeQuery();		
+		possuiVaga = rs.next();		
+		stmt.execute();
+		stmt.close();
+		conexao.close();		
+		return possuiVaga;
+	}
+	
+	/**
+	 * Recebe o id da carona e o id da sessão do usuário e verifica se o usuário possui vaga na carona.
+	 * 
+	 * @param idCarona id da carona
+	 * @param idSessao id da sessão do usuário
+	 * @return true = possui vaga, false = não possui vaga
+	 * @throws SQLException
+	 */
+	public boolean vagaUsuarioCaronaPorSessao(String idCarona, String idSessao) throws SQLException{
+		boolean possuiVaga = false;		
+		Connection conexao = new ConnectionFactory().getConnection();		
+		String sql = "SELECT solicitacao.id FROM solicitacao, usuario WHERE carona = '" + idCarona + "'"
+				+ " AND usuario.id = '" + idSessao + "'"
 				+ " AND solicitacao.caroneiro = usuario.id AND solicitacaoAceita = true AND solicitacaoRejeitada = false"
 				+ " AND solicitacaoDesistida = false";
 		PreparedStatement stmt = conexao.prepareStatement(sql);

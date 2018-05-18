@@ -27,7 +27,7 @@ public class Motorista {
 
 	/**
 	 * Recebe a id da sessão do usuário, a origem, o destino, a data, a hora, e a quantidade de vagas da carona,
-	 * faz a verificação necessária de erros, cadastra uma carona e retorna o id da carona cadastrada.
+	 * cadastra uma carona e retorna o id da carona cadastrada.
 	 * 
 	 * @param idSessao id da sessão do usuário
 	 * @param origem origem da carona
@@ -41,7 +41,51 @@ public class Motorista {
 	public String cadastrarCarona(String idSessao, String origem, String destino, String data, String hora, String vagas) throws Exception{
 		logger.info("Executando método cadastrarCarona");
 		
-		CaronaDAO c = CaronaDAO.getInstance();
+		CaronaDAO c = CaronaDAO.getInstance();				
+		verificaEntradas(idSessao, origem, destino, data, hora, vagas);
+		Carona carona = new Carona(origem, destino, validaData(data), validaHora(hora), validaVagas(vagas));		
+		carona.setIdUsuario(idSessao);
+		return c.cadastrarCarona(carona);
+	}
+	
+	/**
+	 * Recebe a id da sessão do usuário, a origem, o destino, a cidade, a data, a hora, e a quantidade de vagas da carona,
+	 * cadastra uma carona municipal e retorna o id da carona cadastrada.
+	 * 
+	 * @param idSessao id da sessão do usuário
+	 * @param origem origem da carona
+	 * @param destino destino da carona
+	 * @param cidade cidade da carona
+	 * @param data data da carona
+	 * @param hora hora da carona
+	 * @param vagas vagas da carona
+	 * @return id da carona
+	 * @throws Exception
+	 */
+	public String cadastrarCaronaMunicipal(String idSessao, String origem, String destino, String cidade, String data, String hora, String vagas) throws Exception{
+		logger.info("Executando método cadastrarCaronaMunicipal");
+		
+		CaronaDAO c = CaronaDAO.getInstance();		
+		verificaEntradas(idSessao, origem, destino, data, hora, vagas);
+		Carona carona = new Carona(origem, destino, cidade, validaData(data), validaHora(hora), validaVagas(vagas));		
+		carona.setIdUsuario(idSessao);
+		return c.cadastrarCarona(carona);
+	}
+	
+	/**
+	 * Recebe a id da sessão do usuário, a origem, o destino, a data, a hora, e a quantidade de vagas da carona,
+	 * e faz a verificação necessária dessa entradas.
+	 * 
+	 * @param idSessao id da sessão do usuário
+	 * @param origem origem da carona
+	 * @param destino destino da carona
+	 * @param data data da carona
+	 * @param hora hora da carona
+	 * @param vagas vagas da carona
+	 * @return id da carona
+	 * @throws Exception
+	 */
+	private void verificaEntradas(String idSessao, String origem, String destino, String data, String hora, String vagas) throws Exception{
 		if(idSessao == null || idSessao.equals("")){
 			Exception e = new Exception("Sessão inválida");
 			logger.error("Sessão inválida - sessão: " + idSessao, e);
@@ -77,11 +121,7 @@ public class Motorista {
 			Exception e = new Exception("Sessão inexistente");
 			logger.error("Sessão inexistente - sessão: " + idSessao, e);
 			throw e;
-		}		
-		
-		Carona carona = new Carona(origem, destino, validaData(data), validaHora(hora), validaVagas(vagas));
-		carona.setIdUsuario(idSessao);
-		return c.cadastrarCarona(carona);
+		}
 	}
 	
 	/**
@@ -112,6 +152,10 @@ public class Motorista {
 	 */
 	private LocalTime validaHora(String hora) throws Exception{
 		logger.info("Executando método validaHora");
+		
+		if(hora.length() == 4){
+			hora = "0" + hora;
+		}
 		
 		DateTimeFormatter formato = DateTimeFormatter.ofPattern("HH:mm").withResolverStyle(ResolverStyle.STRICT);
 				
@@ -265,7 +309,7 @@ public class Motorista {
 	public void reviewVagaEmCarona(String idSessao, String idCarona, String loginCaroneiro, String review) throws Exception{
 		SolicitacaoDAO s = SolicitacaoDAO.getInstance();
 		PresencaDAO dao = PresencaDAO.getInstance();
-		if(!s.vagaUsuarioCarona(idCarona, loginCaroneiro)){
+		if(!s.vagaUsuarioCaronaPorLogin(idCarona, loginCaroneiro)){
 			Exception e = new Exception("Usuário não possui vaga na carona.");
 			logger.error("Usuário não possui vaga na carona - id carona: " + idCarona, e);
 			throw e;

@@ -131,6 +131,28 @@ public class UsuarioDAO {
 	}
 	
 	/**
+	 * Recebe o id da sessão do usuário e retorna o email dele.
+	 * 
+	 * @param idSessao id da sessão do usuário
+	 * @return email do usuário
+	 * @throws SQLException
+	 */
+	public String emailUsuarioPorSessao(String idSessao) throws SQLException{
+		String informacaoRetornada = "";		
+		Connection conexao = new ConnectionFactory().getConnection();
+		String sql = "SELECT email FROM usuario WHERE id = '" + idSessao + "'";
+		PreparedStatement stmt = conexao.prepareStatement(sql);
+		ResultSet rs = stmt.executeQuery();		
+		while(rs.next()){
+			informacaoRetornada = rs.getString("email");
+		}		
+		stmt.execute();
+		stmt.close();
+		conexao.close();		
+		return informacaoRetornada;
+	}
+	
+	/**
 	 * Recebe o login do usuário e o nome da coluna da tabela usuario onde a informação está armazenada
 	 * no banco de dados. Por fim, retorna a informação dessa coluna.
 	 * 

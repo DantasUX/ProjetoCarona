@@ -1,16 +1,24 @@
 package model;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import dao.CaronaDAO;
+import dao.MensagemDAO;
 import dao.PresencaDAO;
 import dao.SolicitacaoDAO;
 import dao.UsuarioDAO;
 
+/**
+ * Faz o controle de usuario.
+ * 
+ * @author Yorras Gomes, Fábio Dantas
+ *
+ */
 public class UsuarioControl {
 	
 	private static final Logger logger = LogManager.getLogger(UsuarioControl.class);
@@ -262,5 +270,17 @@ public class UsuarioControl {
 	public Map<String, Carona> getTodasCaronasUsuario(String idSessao) throws SQLException{
 		CaronaDAO dao = CaronaDAO.getInstance();
 		return dao.getTodasCaronasUsuario(idSessao);
+	}
+	
+	/**
+	 * Recebe o id da sessão do usuário e retorna uma lista das mensagens que não foram lidas.
+	 * 
+	 * @param idSessao id da sessão do usuário
+	 * @return lista das mensagens que não foram lidas
+	 * @throws SQLException
+	 */
+	public List<String> verificarMensagensPerfil(String idSessao) throws SQLException{
+		MensagemDAO m = MensagemDAO.getInstance();
+		return m.mensagensPerfil(idSessao);
 	}
 }

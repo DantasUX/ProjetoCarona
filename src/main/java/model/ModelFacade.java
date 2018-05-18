@@ -18,14 +18,16 @@ public class ModelFacade {
 	private UsuarioControl usuario;
 	private Motorista motorista;
 	private Caroneiro caroneiro;
+	private Sistema sistema;
 	
 	/**
-	 * Construtor padrão. Inicializa um objeto usuario, motorista e caroneiro.
+	 * Construtor padrão. Inicializa um objeto de controle do usuario, motorista, caroneiro e sistema.
 	 */
 	public ModelFacade(){
 		usuario = new UsuarioControl();
 		motorista = new Motorista();
 		caroneiro = new Caroneiro();
+		sistema = new Sistema();
 	}
 	
 	/**
@@ -363,10 +365,112 @@ public class ModelFacade {
 	}
 	
 	/**
+	 * Atribui segura e tranquila ou não funcionou a carona.
+	 * 
+	 * @param idSessao id da sessão do usuário
+	 * @param idCarona id da carona
+	 * @param review carona segura e traquila ou carona não funcionou. Entradas possíveis: segura e traquila, não funcionou.
+	 * @throws Exception
+	 */
+	public void reviewCarona(String idSessao, String idCarona, String review) throws Exception{
+		caroneiro.reviewCarona(idSessao, idCarona, review);
+	}
+	
+	/**
+	 * Cadastra uma nova carona municipal.
+	 * 
+	 * @param idSessao id da sessão do usuário
+	 * @param origem origem da carona
+	 * @param destino destino da carona
+	 * @param cidade cidade da carona
+	 * @param data data da carona
+	 * @param hora hora da carona
+	 * @param vagas quantidade de vagas da carona
+	 * @return id da carona
+	 * @throws Exception
+	 */
+	public String cadastrarCaronaMunicipal(String idSessao, String origem, String destino, String cidade, String data, String hora, String vagas) throws Exception{
+		return motorista.cadastrarCaronaMunicipal(idSessao, origem, destino, cidade, data, hora, vagas);
+	}
+	
+	/**
+	 * Retorna um map contendo o id e a carona.
+	 * 
+	 * @param idSessao id da sessão do usuário
+	 * @param cidade cidade da carona
+	 * @param origem origem da carona
+	 * @param destino destino da carona
+	 * @return um map contendo o id e a carona
+	 * @throws Exception
+	 */
+	public String localizarCaronaMunicipal(String idSessao, String cidade, String origem, String destino) throws Exception{
+		Map<String, Carona> caronas = caroneiro.localizarCaronaMunicipal(cidade, origem, destino);
+		String keys = caronas.keySet().toString();
+		keys = keys.replaceAll(" ", "");
+		keys = "{" + keys.substring(1, keys.length()-1) + "}";
+		return keys;
+	}
+	
+	/**
+	 * Retorna um map contendo o id e a carona.
+	 * 
+	 * @param idSessao id da sessão do usuário
+	 * @param cidade cidade da carona
+	 * @return um map contendo o id e a carona
+	 * @throws Exception
+	 */
+	public String localizarCaronaMunicipal(String idSessao, String cidade) throws Exception{
+		Map<String, Carona> caronas = caroneiro.localizarCaronaMunicipal(cidade);
+		String keys = caronas.keySet().toString();
+		keys = keys.replaceAll(" ", "");
+		keys = "{" + keys.substring(1, keys.length()-1) + "}";
+		return keys;
+	}
+	
+	/**
+	 * Cadastra um novo interesse do usuário.
+	 * 
+	 * @param idSessao id da sessão do usuário
+	 * @param origem origem da carona
+	 * @param destino destino da carona
+	 * @param data data da carona
+	 * @param horaInicio hora inicial para encontrar a carona
+	 * @param horaFim hora final para encontrar a carona
+	 * @return id do interesse
+	 * @throws Exception
+	 */
+	public String cadastrarInteresse(String idSessao, String origem, String destino, String data, String horaInicio, String horaFim) throws Exception{
+		return caroneiro.cadastrarInteresse(idSessao, origem, destino, data, horaInicio, horaFim);
+	}
+	
+	/**
+	 * Verifica as mensagens que não foram lidas do perfil do usuário.
+	 * 
+	 * @param idSessao id da sessão do usuário
+	 * @return lista das mensagens que não foram lidas
+	 * @throws SQLException
+	 */
+	public List<String> verificarMensagensPerfil(String idSessao) throws SQLException{
+		return usuario.verificarMensagensPerfil(idSessao);
+	}
+	
+	/**
+	 * Envia um email.
+	 * 
+	 * @param idSessao id da sessão do usuário
+	 * @param destino email de destino
+	 * @param mensagem testo da mensagem
+	 * @return true = mensagem enviada
+	 */
+	public boolean enviarEmail(String idSessao, String destino, String mensagem){		
+		return sistema.enviarEmail(idSessao, destino, mensagem);
+	}
+	
+	/**
 	 * Reinicia o sistema.
 	 */
 	public void reiniciarSistema(){
-		
+		sistema.reiniciarSistema();
 	}
 	
 	/**
@@ -375,14 +479,14 @@ public class ModelFacade {
 	 * @param login login do usuário
 	 */
 	public void encerrarSessao(String login){
-		
+		sistema.encerrarSessao(login);
 	}
 	
 	/**
 	 * Encerra o sistema.
 	 */
 	public void encerrarSistema(){
-		
+		sistema.encerrarSistema();
 	}
 	
 	/**
@@ -390,8 +494,7 @@ public class ModelFacade {
 	 * @throws SQLException 
 	 */
 	public void zerarSistema() throws SQLException{
-		ZerarSistema zerarSistema = new ZerarSistema();
-		zerarSistema.zerarSistema();
+		sistema.zerarSistema();
 	}	
 	
 	public static void main(String[] args){
@@ -399,7 +502,9 @@ public class ModelFacade {
 				"src/test/resources/US02.txt", "src/test/resources/US03.txt",
 				"src/test/resources/US04.txt", "src/test/resources/US05.txt",
 				"src/test/resources/US06.txt", "src/test/resources/US07.txt",
-				"src/test/resources/US08.txt"};
+				"src/test/resources/US08.txt", "src/test/resources/US09.txt",
+				"src/test/resources/US10.txt", "src/test/resources/US11.txt",
+				"src/test/resources/US12.txt"};
 		EasyAccept.main(args);
 	}
 }

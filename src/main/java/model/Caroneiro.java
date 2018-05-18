@@ -7,6 +7,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import dao.CaronaDAO;
+import dao.InteresseDAO;
 import dao.SolicitacaoDAO;
 
 /**
@@ -48,6 +49,46 @@ public class Caroneiro {
 	}
 	
 	/**
+	 * Recebe a cidade, a origem e o destino da carona municipal, faz a verificação necessária de erros e localiza as caronas.
+	 * 
+	 * @param cidade cidade da carona
+	 * @param origem origem da carona
+	 * @param destino destino da carona
+	 * @return um map contendo o id e a carona
+	 * @throws Exception
+	 */
+	public Map<String, Carona> localizarCaronaMunicipal(String cidade, String origem, String destino) throws Exception{
+		logger.info("Executando método localizarCaronaMunicipal");
+		
+		CaronaDAO dao = CaronaDAO.getInstance();		
+		if(cidade == null || cidade.equals("")){
+			Exception e = new Exception("Cidade inexistente");
+			logger.error("Cidade inexistente - cidade: " + cidade, e);
+			throw e;
+		}		
+		return dao.localizarCaronaMunicipal(cidade, origem, destino);
+	}
+	
+	/**
+	 * Recebe a cidade da carona municipal, faz a verificação necessária de erros e localiza as caronas.
+	 * 
+	 * @param cidade cidade da carona
+	 * @return um map contendo o id e a carona
+	 * @throws Exception
+	 */
+	public Map<String, Carona> localizarCaronaMunicipal(String cidade) throws Exception{
+		logger.info("Executando método localizarCaronaMunicipal");
+		
+		CaronaDAO dao = CaronaDAO.getInstance();		
+		if(cidade == null || cidade.equals("")){
+			Exception e = new Exception("Cidade inexistente");
+			logger.error("Cidade inexistente - cidade: " + cidade, e);
+			throw e;
+		}		
+		return dao.localizarCaronaMunicipal(cidade);
+	}
+	
+	/**
 	 * Recebe o id da carona e o atributo, faz a verificação necessária de erros e retorna a origem, o destino,
 	 * a data ou quantidade de vagas, dependendo do valor do atributo.
 	 * 
@@ -86,6 +127,9 @@ public class Caroneiro {
 		}
 		else if(atributo.equals("vagas")){
 			return dao.vagasCarona(idCarona)+"";
+		}
+		else if(atributo.equals("ehMunicipal")){
+			return dao.caronaMunicipal(idCarona)+"";
 		}
 		else{
 			Exception e = new Exception("Atributo inexistente");
@@ -191,5 +235,68 @@ public class Caroneiro {
 	public String solicitarVaga(String idSessao, String idCarona) throws SQLException{
 		SolicitacaoDAO s = SolicitacaoDAO.getInstance();
 		return s.solicitarVaga(idSessao, idCarona);
-	}	
+	}
+	
+	/**
+	 * Recebe o id da sessão do usuário, o id da carona, e o review falando se a carona é segura e tranquila ou se ela
+	 * não funcionou, faz a verificação necessária e em seguida marca a carona como segura e tranquila ou como não funcionou.
+	 * 
+	 * @param idSessao id da sessão do usuário
+	 * @param idCarona id da carona
+	 * @param review carona segura e traquila ou carona não funcionou. Entradas possíveis: segura e traquila, não funcionou.
+	 * @throws Exception
+	 */
+	public void reviewCarona(String idSessao, String idCarona, String review) throws Exception{
+		CaronaDAO c = CaronaDAO.getInstance();
+		SolicitacaoDAO s = SolicitacaoDAO.getInstance();
+		if(!s.vagaUsuarioCaronaPorSessao(idCarona, idSessao)){
+			Exception e = new Exception("Usuário não possui vaga na carona.");
+			logger.error("Usuário não possui vaga na carona - id carona: " + idCarona, e);
+			throw e;
+		}
+		if(review.equals("segura e tranquila")){
+			c.marcarComoSeguraTranquila(idSessao, idCarona);
+		}
+		else if(review.equals("não funcionou")){
+			c.marcarNaoFuncionou(idSessao, idCarona);
+		}
+		else{
+			Exception e = new Exception("Opção inválida.");
+			logger.error("Opção inválida - Opção: " + review, e);
+			throw e;
+		}
+	}
+	
+	/**
+	 * Recebe o id da sessão do usuário, a origem, o destino e a data da carona, e a hora final e inicial,
+	 * faz a verificação necessária de erros e retorna o id do interesse.
+	 * 
+	 * @param idSessao id da sessão do usuário
+	 * @param origem origem da carona
+	 * @param destino destino da carona
+	 * @param data data da carona
+	 * @param horaInicio hora inicial para encontrar a carona
+	 * @param horaFim hora final para encontrar a carona
+	 * @return id do interesse
+	 * @throws Exception
+	 */
+	public String cadastrarInteresse(String idSessao, String origem, String destino, String data, String horaInicio, String horaFim) throws Exception{
+		InteresseDAO i = InteresseDAO.getInstance();		
+		if(data == null){
+			Exception e = new Exception("Data inválida");
+			logger.error("Data inválida - data: " + data, e);
+			throw e;
+		}		
+		if(origem.equals("-") || origem.equals("!")){
+			Exception e = new Exception("Origem inválida");
+			logger.error("Origem inválida - origem: " + origem, e);
+			throw e;
+		}
+		if(destino.equals("-") || destino.equals("!")){
+			Exception e = new Exception("Destino inválido");
+			logger.error("Destino inválido - destino: " + destino, e);
+			throw e;
+		}		
+		return i.cadastrarInteresse(idSessao, origem, destino, data, horaInicio, horaFim);
+	}
 }

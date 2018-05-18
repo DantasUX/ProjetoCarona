@@ -10,19 +10,19 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 import model.ModelFacade;
-import model.ZerarSistema;
+import model.Sistema;
 import model.Usuario;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ModelFacadeTest {
 
 	private ModelFacade acesso;
-	private ZerarSistema sessao;
+	private Sistema sessao;
 	
 	@Before
 	public void setUp() throws SQLException{
 		acesso = new ModelFacade();
-		sessao = new ZerarSistema();		
+		sessao = new Sistema();		
 	}
 	
 	@Test
@@ -34,16 +34,19 @@ public class ModelFacadeTest {
 		assertEquals(acesso.cadastrarCarona("1", "João Pessoa", "Campina Grande", "23/06/2013", "16:00", "3"), "1");
 		assertEquals(acesso.cadastrarCarona("1", "Rio de Janeiro", "São Paulo", "31/05/2013", "08:00", "2"), "2");
 		assertEquals(acesso.cadastrarCarona("1", "João Pessoa", "Campina Grande", "25/11/2026", "06:59", "4"), "3");
+		assertEquals(acesso.cadastrarCaronaMunicipal("1", "Açude Velho", "Shopping Boulevard", "Campina Grande", "04/06/2013", "20:00", "2"), "4");
 		assertEquals(acesso.getAtributoCarona("1", "origem"), "João Pessoa");
 		assertEquals(acesso.getTrajeto("1"), "João Pessoa - Campina Grande");
 		assertEquals(acesso.getCarona("1"), "João Pessoa para Campina Grande, no dia 23/06/2013, as 16:00");
-		assertEquals(acesso.localizarCarona("1", "", ""), "{1,2,3}");
+		assertEquals(acesso.localizarCarona("1", "", ""), "{1,2,3,4}");
+		assertEquals(acesso.localizarCaronaMunicipal("1", "Campina Grande", "Açude Velho", "Shopping Boulevard"), "{4}");
+		assertEquals(acesso.localizarCaronaMunicipal("1", "Campina Grande"), "{4}");
 		
 		acesso.criarUsuario("steve", "5t3v3", "Steven Paul Jobs", "Palo Alto, California", "jobs@apple.com");
 		acesso.criarUsuario("bill", "severino", "William Henry Gates III", "Medina, Washington", "billzin@msn.com");
 		assertEquals(acesso.getCaronaUsuario("1", 1), "1");
 		assertEquals(acesso.getCaronaUsuario("1", 2), "2");
-		assertEquals(acesso.getTodasCaronasUsuario("1"), "{1,2,3}");
+		assertEquals(acesso.getTodasCaronasUsuario("1"), "{1,2,3,4}");
 	}
 
 	@Test
@@ -75,6 +78,7 @@ public class ModelFacadeTest {
 		}
 		
 		acesso.solicitarVaga("2", "2");
+		acesso.enviarEmail("1", "mark@facebook.com", "A solicitação foi recebida");
 		acesso.rejeitarSolicitacao("1", "2");
 		
 		try {
@@ -99,7 +103,9 @@ public class ModelFacadeTest {
 			assertEquals(e.getMessage(), "Opção inválida.");
 		}
 		acesso.reviewVagaEmCarona("1", "1", "steve", "faltou");
+		acesso.reviewCarona("2", "1", "não funcionou");
 		acesso.reviewVagaEmCarona("1", "3", "steve", "não faltou");
+		acesso.reviewCarona("2", "3", "segura e tranquila");
 		
 		assertEquals(acesso.getAtributoSolicitacao("1", "origem"), "João Pessoa");
 		assertEquals(acesso.getAtributoSolicitacao("1", "destino"), "Campina Grande");
@@ -135,11 +141,12 @@ public class ModelFacadeTest {
 		assertEquals(acesso.getAtributoPerfil("mark", "nome"), "Mark Zuckerberg");
 		assertEquals(acesso.getAtributoPerfil("mark", "endereco"), "Palo Alto, California");
 		assertEquals(acesso.getAtributoPerfil("mark", "email"), "mark@facebook.com");
-		assertEquals(acesso.getAtributoPerfil("mark", "historico de caronas"), "[1,2,3]");
+		assertEquals(acesso.getAtributoPerfil("mark", "historico de caronas"), "[1,2,3,4]");
 		assertEquals(acesso.getAtributoPerfil("mark", "historico de vagas em caronas"), "[]");
 		assertEquals(acesso.getAtributoPerfil("mark", "caronas seguras e tranquilas"), "0");
 		assertEquals(acesso.getAtributoPerfil("mark", "caronas que não funcionaram"), "0");
 		assertEquals(acesso.getAtributoPerfil("mark", "faltas em vagas de caronas"), "0");
 		assertEquals(acesso.getAtributoPerfil("mark", "presencas em vagas de caronas"), "0");
+		assertEquals(acesso.verificarMensagensPerfil("1").toString(), "[]");
 	}
 }

@@ -10,7 +10,7 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 import dao.UsuarioDAO;
-import model.ZerarSistema;
+import model.Sistema;
 import model.Usuario;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -18,12 +18,12 @@ public class UsuarioDAOTest {
 	
 	private Usuario usuario;
 	private UsuarioDAO dao;
-	private ZerarSistema zerarSistema;
+	private Sistema zerarSistema;
 
 	@Before
 	public void setUp() throws Exception{		
 		dao = UsuarioDAO.getInstance();
-		zerarSistema = new ZerarSistema();
+		zerarSistema = new Sistema();
 	}	
 	
 	@Test

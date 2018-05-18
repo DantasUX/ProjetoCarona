@@ -7,21 +7,21 @@ import org.junit.Test;
 
 import dao.SolicitacaoDAO;
 import model.Motorista;
-import model.ZerarSistema;
+import model.Sistema;
 import model.UsuarioControl;
 
 public class SolicitacaoDAOTest {
 	
 	private SolicitacaoDAO dao;
 	private UsuarioControl usuario;
-	private ZerarSistema zerarSistema;
+	private Sistema zerarSistema;
 	private Motorista motorista;
 
 	@Before
 	public void setUP() throws Exception{
 		dao = SolicitacaoDAO.getInstance();
 		usuario = new UsuarioControl();
-		zerarSistema = new ZerarSistema();
+		zerarSistema = new Sistema();
 		motorista = new Motorista();
 		zerarSistema.zerarSistema();
 		usuario.criarUsuario("mark", "m@rk", "Mark Zuckerberg", "Palo Alto, California", "mark@facebook.com");

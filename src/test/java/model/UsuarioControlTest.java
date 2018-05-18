@@ -6,18 +6,18 @@ import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Test;
 
-import model.ZerarSistema;
+import model.Sistema;
 import model.UsuarioControl;
 
 public class UsuarioControlTest {	
 	
 	private UsuarioControl usuario;
-	private ZerarSistema zerarSistema;
+	private Sistema zerarSistema;
 	
 	@Before
 	public void setUp() throws Exception{
 		usuario = new UsuarioControl();
-		zerarSistema = new ZerarSistema();
+		zerarSistema = new Sistema();
 		zerarSistema.zerarSistema();
 	}
 	

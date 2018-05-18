@@ -6,20 +6,20 @@ import org.junit.Before;
 import org.junit.Test;
 
 import model.Motorista;
-import model.ZerarSistema;
+import model.Sistema;
 import model.UsuarioControl;
 
 public class MotoristaTest {	
 
 	private Motorista motorista;
 	private UsuarioControl usuario;
-	private ZerarSistema zerarSistema;
+	private Sistema zerarSistema;
 	
 	@Before
 	public void setUp() throws Exception{
 		motorista = new Motorista();
 		usuario = new UsuarioControl();
-		zerarSistema = new ZerarSistema();
+		zerarSistema = new Sistema();
 		zerarSistema.zerarSistema();
 		usuario.criarUsuario("mark", "m@rk", "Mark Zuckerberg", "Palo Alto, California", "mark@facebook.com");
 	}
@@ -28,6 +28,7 @@ public class MotoristaTest {
 	public void cadastrarCarona(){
 		try{
 			motorista.cadastrarCarona("1", "João Pessoa", "Campina Grande", "23/06/2013", "16:00", "3");
+			motorista.cadastrarCaronaMunicipal("1", "Açude Velho", "Shopping Boulevard", "Campina Grande", "04/06/2013", "20:00", "2");
 			motorista.cadastrarCarona(null, "Campina Grande", "João Pessoa", "23/06/2013", "16:00", "3");
 			fail("Falha! Não aconteceu a exceção.");
 		}

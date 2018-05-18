@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: 22-Abr-2018 às 03:24
+-- Generation Time: 19-Maio-2018 às 01:18
 -- Versão do servidor: 5.7.17-log
 -- PHP Version: 5.6.30
 
@@ -30,11 +30,13 @@ CREATE TABLE `carona` (
   `id` int(11) NOT NULL,
   `origem` varchar(100) NOT NULL,
   `destino` varchar(100) NOT NULL,
+  `cidade` varchar(50) DEFAULT NULL,
   `data` date NOT NULL,
   `hora` time NOT NULL,
   `vagas` int(11) NOT NULL,
   `segura` tinyint(1) NOT NULL DEFAULT '0',
   `funcionou` tinyint(1) NOT NULL DEFAULT '1',
+  `municipal` tinyint(4) NOT NULL,
   `idUsuario` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -42,10 +44,38 @@ CREATE TABLE `carona` (
 -- Extraindo dados da tabela `carona`
 --
 
-INSERT INTO `carona` (`id`, `origem`, `destino`, `data`, `hora`, `vagas`, `segura`, `funcionou`, `idUsuario`) VALUES
-(1, 'João Pessoa', 'Campina Grande', '2013-06-23', '16:00:00', 3, 0, 1, 1),
-(2, 'Rio de Janeiro', 'São Paulo', '2013-05-31', '08:00:00', 2, 0, 1, 1),
-(3, 'João Pessoa', 'Campina Grande', '2026-11-25', '06:59:00', 3, 0, 1, 1);
+INSERT INTO `carona` (`id`, `origem`, `destino`, `cidade`, `data`, `hora`, `vagas`, `segura`, `funcionou`, `municipal`, `idUsuario`) VALUES
+(1, 'Campina Grande', 'João Pessoa', NULL, '2013-06-02', '12:00:00', 0, 0, 1, 0, 1),
+(2, 'Campina Grande', 'João Pessoa', NULL, '2013-06-04', '16:00:00', 2, 0, 1, 0, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `interesse`
+--
+
+CREATE TABLE `interesse` (
+  `id` int(11) NOT NULL,
+  `origem` varchar(100) NOT NULL,
+  `destino` varchar(100) NOT NULL,
+  `data` date DEFAULT NULL,
+  `horaInicio` time DEFAULT NULL,
+  `horaFim` time DEFAULT NULL,
+  `idUsuario` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `mensagem`
+--
+
+CREATE TABLE `mensagem` (
+  `id` int(11) NOT NULL,
+  `texto` varchar(1000) NOT NULL,
+  `lida` tinyint(4) NOT NULL DEFAULT '0',
+  `idUsuario` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -60,14 +90,6 @@ CREATE TABLE `presenca` (
   `loginCaroneiro` varchar(50) NOT NULL,
   `caroneiroFaltou` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Extraindo dados da tabela `presenca`
---
-
-INSERT INTO `presenca` (`id`, `carona`, `motorista`, `loginCaroneiro`, `caroneiroFaltou`) VALUES
-(1, 1, 1, 'steve', 1),
-(2, 3, 1, 'steve', 0);
 
 -- --------------------------------------------------------
 
@@ -93,9 +115,8 @@ CREATE TABLE `solicitacao` (
 --
 
 INSERT INTO `solicitacao` (`id`, `caroneiro`, `motorista`, `carona`, `pontosSugeridos`, `respostaPontosSugeridos`, `pontoEncontro`, `solicitacaoAceita`, `solicitacaoRejeitada`, `solicitacaoDesistida`) VALUES
-(1, 2, 1, 1, 'Acude Velho; Hiper Bompreco', 'Acude Velho;Parque da Crianca', 'Acude Velho', 1, 0, 1),
-(2, 2, 1, 2, NULL, NULL, NULL, 0, 1, 0),
-(3, 2, 1, 3, NULL, NULL, NULL, 1, 0, 0);
+(1, 2, 1, 1, NULL, NULL, NULL, 1, 1, 0),
+(2, 2, NULL, 2, NULL, NULL, NULL, 0, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -118,8 +139,7 @@ CREATE TABLE `usuario` (
 
 INSERT INTO `usuario` (`id`, `login`, `senha`, `nome`, `endereco`, `email`) VALUES
 (1, 'mark', 'm@rk', 'Mark Zuckerberg', 'Palo Alto, California', 'mark@facebook.com'),
-(2, 'steve', '5t3v3', 'Steven Paul Jobs', 'Palo Alto, California', 'jobs@apple.com'),
-(3, 'bill', 'severino', 'William Henry Gates III', 'Medina, Washington', 'billzin@msn.com');
+(2, 'bill', 'bilz@o', 'Bill Clinton', 'Hollywood, California', 'bill@gmail.com');
 
 --
 -- Indexes for dumped tables
@@ -131,6 +151,20 @@ INSERT INTO `usuario` (`id`, `login`, `senha`, `nome`, `endereco`, `email`) VALU
 ALTER TABLE `carona`
   ADD PRIMARY KEY (`id`),
   ADD KEY `idUsuario` (`idUsuario`);
+
+--
+-- Indexes for table `interesse`
+--
+ALTER TABLE `interesse`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `usuario.id` (`idUsuario`);
+
+--
+-- Indexes for table `mensagem`
+--
+ALTER TABLE `mensagem`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `usuario.id` (`idUsuario`);
 
 --
 -- Indexes for table `presenca`
@@ -163,22 +197,32 @@ ALTER TABLE `usuario`
 -- AUTO_INCREMENT for table `carona`
 --
 ALTER TABLE `carona`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+--
+-- AUTO_INCREMENT for table `interesse`
+--
+ALTER TABLE `interesse`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `mensagem`
+--
+ALTER TABLE `mensagem`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT for table `presenca`
 --
 ALTER TABLE `presenca`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT for table `solicitacao`
 --
 ALTER TABLE `solicitacao`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 --
 -- AUTO_INCREMENT for table `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 --
 -- Constraints for dumped tables
 --

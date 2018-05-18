@@ -63,25 +63,35 @@ public class CaronaDAO {
 		
 		String idCarona = "";		
 		Connection conexao = new ConnectionFactory().getConnection();		
-		String sql = "INSERT INTO carona " + "(origem,destino,data,hora,vagas,idUsuario) "
-				+ "values (?,?,?,?,?,?)";		
+		String sql = "INSERT INTO carona " + "(origem,destino,cidade,data,hora,vagas,municipal,idUsuario) "
+				+ "values (?,?,?,?,?,?,?,?)";		
 		DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/uuuu");		
 		PreparedStatement stmt = conexao.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 		stmt.setString(1, carona.getOrigem());
 		stmt.setString(2, carona.getDestino());
-		stmt.setString(3, LocalDate.parse(carona.getData(), formato).toString());
-		stmt.setString(4, carona.getHora());
-		stmt.setInt(5, carona.getVagas());
-		stmt.setString(6, carona.getIdUsuario());		
+		stmt.setString(3, carona.getCidade());
+		stmt.setString(4, LocalDate.parse(carona.getData(), formato).toString());
+		stmt.setString(5, carona.getHora());
+		stmt.setInt(6, carona.getVagas());
+		stmt.setBoolean(7, carona.getMunicipal());
+		stmt.setString(8, carona.getIdUsuario());		
 		stmt.executeUpdate();
 		ResultSet rs = stmt.getGeneratedKeys();		
 		while(rs.next()){
 			idCarona = rs.getString(1);
 		}
 		stmt.close();		
-		conexao.close();		
+		conexao.close();
+		
+		InteresseDAO i = InteresseDAO.getInstance();
+		MensagemDAO m = MensagemDAO.getInstance();
+		List<String> idUsuario = i.verificaInteresse(carona);
+		for(String id: idUsuario){
+			m.enviaMensagemParaUsuario(carona, id);
+		}
+		
 		return idCarona;
-	}
+	}	
 	
 	/**
 	 * Recebe a origem e o destino. Retorna a carona e sua id. Tanto a origem quanto o destino podem ser
@@ -129,7 +139,67 @@ public class CaronaDAO {
 		stmt.close();
 		conexao.close();								
 		return caronasLocalizadas;
-	}	
+	}
+	
+	/**
+	 * Recebe a cidade, a origem e o destino da carona municipal e localiza as caronas.
+	 * 
+	 * @param cidade cidade da carona
+	 * @param origem origem da carona
+	 * @param destino destino da carona
+	 * @return um map contendo o id e a carona
+	 * @throws Exception
+	 */
+	public Map<String, Carona> localizarCaronaMunicipal(String cidade, String origem, String destino) throws SQLException{
+		Map<String, Carona> caronasMunicipaisLocalizadas = new LinkedHashMap<String, Carona>();
+		
+		Connection conexao = new ConnectionFactory().getConnection();
+		String sql = "SELECT * FROM carona WHERE municipal = true "
+				+ "AND cidade = '" + cidade + "' AND origem = '" + origem + "' AND destino = '" + destino + "'";
+		PreparedStatement stmt = conexao.prepareStatement(sql);
+		ResultSet rs = stmt.executeQuery();		
+		while (rs.next()) {
+			LocalDate data = LocalDate.parse(rs.getString("data"));
+			LocalTime hora = LocalTime.parse(rs.getString("hora"));
+			Carona carona = new Carona(rs.getString("origem"), rs.getString("destino"), rs.getString("cidade"), data, hora, rs.getInt("vagas"));
+			carona.setIdUsuario(rs.getString("idUsuario"));
+			caronasMunicipaisLocalizadas.put(rs.getString("id"), carona);
+		}
+		stmt.execute();
+		stmt.close();
+		conexao.close();
+		
+		return caronasMunicipaisLocalizadas;
+	}
+	
+	/**
+	 * Recebe a cidade da carona municipal e localiza as caronas.
+	 * 
+	 * @param cidade cidade da carona
+	 * @return um map contendo o id e a carona
+	 * @throws Exception
+	 */
+	public Map<String, Carona> localizarCaronaMunicipal(String cidade) throws SQLException{
+		Map<String, Carona> caronasMunicipaisLocalizadas = new LinkedHashMap<String, Carona>();
+		
+		Connection conexao = new ConnectionFactory().getConnection();
+		String sql = "SELECT * FROM carona WHERE municipal = true "
+				+ "AND cidade = '" + cidade + "'";
+		PreparedStatement stmt = conexao.prepareStatement(sql);
+		ResultSet rs = stmt.executeQuery();		
+		while (rs.next()) {
+			LocalDate data = LocalDate.parse(rs.getString("data"));
+			LocalTime hora = LocalTime.parse(rs.getString("hora"));
+			Carona carona = new Carona(rs.getString("origem"), rs.getString("destino"), rs.getString("cidade"), data, hora, rs.getInt("vagas"));
+			carona.setIdUsuario(rs.getString("idUsuario"));
+			caronasMunicipaisLocalizadas.put(rs.getString("id"), carona);
+		}
+		stmt.execute();
+		stmt.close();
+		conexao.close();
+		
+		return caronasMunicipaisLocalizadas;
+	}
 	
 	/**
 	 * Recebe o id da carona e retorna a sua origem.
@@ -417,6 +487,63 @@ public class CaronaDAO {
 		stmt.close();
 		conexao.close();		
 		return resultado;
+	}
+	
+	/**
+	 * Recebe o id da sessão do usuário e o id da carona e marca a carona como segura e tranquila.
+	 * 
+	 * @param idSessao id da sessão do usuário
+	 * @param idCarona id da carona
+	 * @throws SQLException
+	 */
+	public void marcarComoSeguraTranquila(String idSessao, String idCarona) throws SQLException{
+		Connection conexao = new ConnectionFactory().getConnection();		
+		String sql = "UPDATE carona SET segura = true"
+				+ " WHERE id = '" + idCarona + "'";		
+		PreparedStatement stmt = conexao.prepareStatement(sql);		
+		stmt.execute();
+		stmt.close();		
+		conexao.close();
+	}
+	
+	/**
+	 * Recebe o id da sessão do usuário e o id da carona e marca a carona como não funcionou.
+	 * 
+	 * @param idSessao id da sessão do usuário
+	 * @param idCarona id da carona
+	 * @throws SQLException
+	 */
+	public void marcarNaoFuncionou(String idSessao, String idCarona) throws SQLException{
+		Connection conexao = new ConnectionFactory().getConnection();		
+		String sql = "UPDATE carona SET funcionou = false"
+				+ " WHERE id = '" + idCarona + "'";		
+		PreparedStatement stmt = conexao.prepareStatement(sql);		
+		stmt.execute();
+		stmt.close();		
+		conexao.close();
+	}
+	
+	/**
+	 * Recebe o id da carona e verifica se a carona é municipal.
+	 * 
+	 * @param idCarona id da carona
+	 * @return true = municipal, false = não municipal
+	 * @throws SQLException
+	 */
+	public boolean caronaMunicipal(String idCarona) throws SQLException{
+		boolean municipal = false;		
+		Connection conexao = new ConnectionFactory().getConnection();		
+		String sql = "SELECT municipal FROM carona WHERE id = '" + idCarona + "'";		
+		PreparedStatement stmt = conexao.prepareStatement(sql);
+		ResultSet rs = stmt.executeQuery();		
+		while (rs.next()) {
+			municipal = rs.getBoolean("municipal");
+		}
+		stmt.execute();
+		stmt.close();		
+		conexao.close();
+		
+		return municipal;
 	}
 	
 	/**

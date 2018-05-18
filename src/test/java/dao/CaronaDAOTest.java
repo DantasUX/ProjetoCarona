@@ -16,7 +16,7 @@ import org.junit.runners.MethodSorters;
 import dao.CaronaDAO;
 import dao.UsuarioDAO;
 import model.Carona;
-import model.ZerarSistema;
+import model.Sistema;
 import model.Usuario;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -24,14 +24,14 @@ public class CaronaDAOTest {
 
 	private CaronaDAO dao;
 	private Carona carona;
-	private ZerarSistema sessao;
+	private Sistema sessao;
 	private Usuario usuario;
 	private UsuarioDAO u;
 	
 	@Before
 	public void setUp(){
 		dao = CaronaDAO.getInstance();
-		sessao = new ZerarSistema();
+		sessao = new Sistema();
 		u = UsuarioDAO.getInstance();
 	}
 	
