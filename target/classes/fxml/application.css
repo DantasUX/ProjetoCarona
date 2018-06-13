@@ -1,0 +1,12 @@
+/* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */
+
+#label{
+	-fx-background-color: #111;
+	-fx-color: #ccc;
+}
+
+#fundo{
+	-fx-background-color: #ccc;
+	-fx-background-image: url(./1.jpg);
+
+}

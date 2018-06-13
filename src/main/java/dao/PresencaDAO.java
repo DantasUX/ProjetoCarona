@@ -30,7 +30,7 @@ public class PresencaDAO {
 	 * @return PresencaDAO
 	 */
 	public static PresencaDAO getInstance(){
-		logger.info("Abrindo conexão com a base de dados de presenças");
+		logger.info("Abrindo conexão com a base de dados de presença");
 		
 		if(instanciaUnica == null){
 			instanciaUnica = new PresencaDAO();			
@@ -48,7 +48,7 @@ public class PresencaDAO {
 	 * @throws SQLException
 	 */
 	public void reviewVagaEmCarona(String motorista, String idCarona, String loginCaroneiro, boolean review) throws SQLException{
-		logger.info("Atribuindo falta a caroneiro - login do caroneiro: " + loginCaroneiro);
+		logger.info("Executando método reviewVagaEmCarona");
 		
 		Connection conexao = new ConnectionFactory().getConnection();		
 		String sql = "INSERT INTO presenca " + "(carona,motorista,loginCaroneiro,caroneiroFaltou) "
@@ -71,7 +71,7 @@ public class PresencaDAO {
 	 * @throws SQLException
 	 */
 	public int faltasEmCaronas(String login) throws SQLException{
-		logger.info("Retornando quantidade de faltas do usuário em caronas - login: " + login);
+		logger.info("Executando método faltasEmCaronas");
 		
 		int resultado = 0;		
 		Connection conexao = new ConnectionFactory().getConnection();
@@ -96,7 +96,7 @@ public class PresencaDAO {
 	 * @throws SQLException
 	 */
 	public int presencasEmCaronas(String login) throws SQLException{
-		logger.info("Retornando quantidade de presença do usuário em caronas - login: " + login);
+		logger.info("Executando método presencasEmCaronas");
 		
 		int resultado = 0;		
 		Connection conexao = new ConnectionFactory().getConnection();
@@ -119,6 +119,8 @@ public class PresencaDAO {
 	 * @throws SQLException
 	 */
 	public void apagarPresencas() throws SQLException{
+		logger.info("Executando método apagarPresencas");
+		
 		Connection conexao1 = new ConnectionFactory().getConnection();
 		String sql1 = "DELETE FROM presenca WHERE id > 0";
 		PreparedStatement stmt1 = conexao1.prepareStatement(sql1);

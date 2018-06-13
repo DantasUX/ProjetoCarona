@@ -214,9 +214,9 @@ public class ModelFacade {
 	 * @param idSessao id da sessão do usuário.
 	 * @param idCarona id da carona
 	 * @return id da solicitação
-	 * @throws SQLException
+	 * @throws Exception 
 	 */
-	public String solicitarVaga(String idSessao, String idCarona) throws SQLException{
+	public String solicitarVaga(String idSessao, String idCarona) throws Exception{
 		return caroneiro.solicitarVaga(idSessao, idCarona);
 	}
 	
@@ -467,6 +467,113 @@ public class ModelFacade {
 	}
 	
 	/**
+	 * Cadastra uma carona relâmpago.
+	 * 
+	 * @param idSessao id da sessão do usuário
+	 * @param origem origem da carona
+	 * @param destino destino da carona
+	 * @param dataIda data de ida da carona
+	 * @param dataVolta data de volta da carona
+	 * @param hora hora da carona
+	 * @param minimoCaroneiros mínimo de caroneiros necessários para a carona
+	 * @return id da carona relâmpago
+	 * @throws Exception
+	 */
+	public String cadastrarCaronaRelampago(String idSessao, String origem, String destino, String dataIda, String dataVolta, String hora, String minimoCaroneiros) throws Exception{
+		return motorista.cadastrarCaronaRelampago(idSessao, origem, destino, dataIda, dataVolta, hora, minimoCaroneiros);
+	}
+	
+	/**
+	 * Retorna a origem, o destino, a data, o mínimo de caroneiros ou se a carona está expirada,
+	 * dependendo do valor do atributo.
+	 * 
+	 * @param idCarona id da carona
+	 * @param atributo origem, destino, data, minimoCaroneiros ou expired
+	 * @return origem, destino, data, mínimo de caroneiros ou se a carona está expirada, dependendo do valor do atributo
+	 * @throws Exception
+	 */
+	public String getAtributoCaronaRelampago(String idCarona, String atributo) throws Exception{
+		return caroneiro.getAtributoCarona(idCarona, atributo);
+	}
+	
+	/**
+	 * Retorna a quantidade de mínimo de caroneiros necessários para a carona relâmpago.
+	 * 
+	 * @param idCarona id da carona
+	 * @return mínimo de caroneiros necessários para a carona relâmpago
+	 * @throws SQLException
+	 */
+	public String getMinimoCaroneiros(String idCarona) throws SQLException{
+		return caroneiro.getMinimoCaroneiros(idCarona);
+	}
+	
+	/**
+	 * Retorna informações como origem, destino, data e hora.
+	 * 
+	 * @param idCarona id da carona
+	 * @return origem, destino, data e hora
+	 * @throws Exception
+	 */
+	public String getCaronaRelampago(String idCarona) throws Exception{
+		return caroneiro.getCaronaRelampago(idCarona);
+	}
+	
+	/**
+	 * Verifica se a carona está expirada ou não.
+	 * 
+	 * @param idCarona id da carona
+	 * @return id da carona = carona expirada, "" = carona não expirada
+	 * @throws SQLException
+	 */
+	public String setCaronaRelampagoExpired(String idCarona) throws SQLException{
+		return sistema.setCaronaRelampagoExpired(idCarona);
+	}
+	
+	/**
+	 * Retorna lista de usuários que tem vaga na carona expirada.
+	 * 
+	 * @param idExpired id da carona expirada
+	 * @param atributo emailTo
+	 * @return lista contendo os usuários que tem vaga na carona expirada
+	 * @throws SQLException
+	 */
+	public String getAtributoExpired(String idExpired, String atributo) throws SQLException{
+		return sistema.getAtributoExpired(idExpired, atributo).toString().replaceAll(" ", "");
+	}
+	
+	/**
+	 * Marca a carona como preferencial.
+	 * 
+	 * @param idCarona id da carona
+	 * @throws SQLException
+	 */
+	public void definirCaronaPreferencial(String idCarona) throws SQLException{
+		motorista.definirCaronaPreferencial(idCarona);
+	}
+	
+	/**
+	 * Verifica se a carona é preferencial.
+	 * 
+	 * @param idCarona id da carona
+	 * @return true = carona preferencial, false = carona não preferencial
+	 * @throws SQLException
+	 */
+	public boolean isCaronaPreferencial(String idCarona) throws SQLException{
+		return caroneiro.isCaronaPreferencial(idCarona);
+	}
+	
+	/**
+	 * Retorna os usuários que tem preferência em uma carona.
+	 * 
+	 * @param idCarona id da carona
+	 * @return lista contendo os usuários que tem preferência em uma carona
+	 * @throws SQLException
+	 */
+	public String getUsuariosPreferenciaisCarona(String idCarona) throws SQLException{
+		return motorista.getUsuariosPreferenciaisCarona(idCarona).toString().replaceAll(" ", "");
+	}
+	
+	/**
 	 * Reinicia o sistema.
 	 */
 	public void reiniciarSistema(){
@@ -504,7 +611,8 @@ public class ModelFacade {
 				"src/test/resources/US06.txt", "src/test/resources/US07.txt",
 				"src/test/resources/US08.txt", "src/test/resources/US09.txt",
 				"src/test/resources/US10.txt", "src/test/resources/US11.txt",
-				"src/test/resources/US12.txt"};
+				"src/test/resources/US12.txt", "src/test/resources/US13.txt",
+				"src/test/resources/US14.txt"};
 		EasyAccept.main(args);
 	}
 }

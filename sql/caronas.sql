@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: 19-Maio-2018 às 01:18
+-- Generation Time: 13-Jun-2018 às 16:23
 -- Versão do servidor: 5.7.17-log
 -- PHP Version: 5.6.30
 
@@ -32,11 +32,12 @@ CREATE TABLE `carona` (
   `destino` varchar(100) NOT NULL,
   `cidade` varchar(50) DEFAULT NULL,
   `data` date NOT NULL,
+  `dataVolta` date DEFAULT NULL,
   `hora` time NOT NULL,
-  `vagas` int(11) NOT NULL,
-  `segura` tinyint(1) NOT NULL DEFAULT '0',
-  `funcionou` tinyint(1) NOT NULL DEFAULT '1',
+  `vagas` int(11) DEFAULT NULL,
   `municipal` tinyint(4) NOT NULL,
+  `minimoCaroneiros` int(11) NOT NULL,
+  `preferencial` tinyint(1) NOT NULL DEFAULT '0',
   `idUsuario` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -44,9 +45,9 @@ CREATE TABLE `carona` (
 -- Extraindo dados da tabela `carona`
 --
 
-INSERT INTO `carona` (`id`, `origem`, `destino`, `cidade`, `data`, `hora`, `vagas`, `segura`, `funcionou`, `municipal`, `idUsuario`) VALUES
-(1, 'Campina Grande', 'João Pessoa', NULL, '2013-06-02', '12:00:00', 0, 0, 1, 0, 1),
-(2, 'Campina Grande', 'João Pessoa', NULL, '2013-06-04', '16:00:00', 2, 0, 1, 0, 1);
+INSERT INTO `carona` (`id`, `origem`, `destino`, `cidade`, `data`, `dataVolta`, `hora`, `vagas`, `municipal`, `minimoCaroneiros`, `preferencial`, `idUsuario`) VALUES
+(1, 'Campina Grande', 'João Pessoa', NULL, '2013-06-20', NULL, '12:00:00', 0, 0, 0, 0, 1),
+(2, 'João Pessoa', 'Campina Grande', NULL, '2013-06-30', NULL, '16:00:00', 1, 0, 0, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -107,16 +108,21 @@ CREATE TABLE `solicitacao` (
   `pontoEncontro` varchar(100) DEFAULT NULL,
   `solicitacaoAceita` tinyint(1) NOT NULL DEFAULT '0',
   `solicitacaoRejeitada` int(11) NOT NULL DEFAULT '0',
-  `solicitacaoDesistida` tinyint(1) NOT NULL DEFAULT '0'
+  `solicitacaoDesistida` tinyint(1) NOT NULL DEFAULT '0',
+  `segura` tinyint(1) NOT NULL DEFAULT '0',
+  `naoFuncionou` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Extraindo dados da tabela `solicitacao`
 --
 
-INSERT INTO `solicitacao` (`id`, `caroneiro`, `motorista`, `carona`, `pontosSugeridos`, `respostaPontosSugeridos`, `pontoEncontro`, `solicitacaoAceita`, `solicitacaoRejeitada`, `solicitacaoDesistida`) VALUES
-(1, 2, 1, 1, NULL, NULL, NULL, 1, 1, 0),
-(2, 2, NULL, 2, NULL, NULL, NULL, 0, 0, 0);
+INSERT INTO `solicitacao` (`id`, `caroneiro`, `motorista`, `carona`, `pontosSugeridos`, `respostaPontosSugeridos`, `pontoEncontro`, `solicitacaoAceita`, `solicitacaoRejeitada`, `solicitacaoDesistida`, `segura`, `naoFuncionou`) VALUES
+(1, 2, 1, 1, NULL, NULL, NULL, 1, 0, 0, 1, 0),
+(2, 3, 1, 1, NULL, NULL, NULL, 1, 0, 0, 0, 1),
+(3, 4, 1, 1, NULL, NULL, NULL, 1, 0, 0, 1, 0),
+(4, 2, 1, 2, NULL, NULL, NULL, 1, 0, 0, 0, 0),
+(5, 4, 1, 2, NULL, NULL, NULL, 1, 0, 0, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -139,7 +145,9 @@ CREATE TABLE `usuario` (
 
 INSERT INTO `usuario` (`id`, `login`, `senha`, `nome`, `endereco`, `email`) VALUES
 (1, 'mark', 'm@rk', 'Mark Zuckerberg', 'Palo Alto, California', 'mark@facebook.com'),
-(2, 'bill', 'bilz@o', 'Bill Clinton', 'Hollywood, California', 'bill@gmail.com');
+(2, 'bill', 'bilz@o', 'William Henry Gates III', 'Medina, Washington', 'billzin@gmail.com'),
+(3, 'vader', 'd4rth', 'Anakin Skywalker', 'Death Star I', 'darthvader@empire.com'),
+(4, 'anakin', 'd4rth', 'Anakin Skywalker', 'Dark Side', 'anakin@darkside.com');
 
 --
 -- Indexes for dumped tables
@@ -217,12 +225,12 @@ ALTER TABLE `presenca`
 -- AUTO_INCREMENT for table `solicitacao`
 --
 ALTER TABLE `solicitacao`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 --
 -- AUTO_INCREMENT for table `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 --
 -- Constraints for dumped tables
 --

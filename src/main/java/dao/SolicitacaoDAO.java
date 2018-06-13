@@ -52,7 +52,7 @@ public class SolicitacaoDAO {
 	 * @throws SQLException
 	 */
 	public String sugerirPontoEncontro(String caroneiro, String idCarona, String pontos) throws SQLException{
-		logger.info("Sugerindo pontos para uma carona e retornando o id da solicitação - id do caroneiro: " + caroneiro);
+		logger.info("Executando método sugerirPontoEncontro");
 		
 		String idSolicitacao = "";		
 		Connection conexao = new ConnectionFactory().getConnection();		
@@ -83,7 +83,7 @@ public class SolicitacaoDAO {
 	 * @throws SQLException
 	 */
 	public void responderSugestaoPontoEncontro(String motorista, String idCarona, String idSugestao, String pontos) throws SQLException{
-		logger.info("Respondendo a sugestão de pontos de encontro do caroneiro - id do motorista" + motorista);
+		logger.info("Executando método responderSugestaoPontoEncontro");
 		
 		Connection conexao = new ConnectionFactory().getConnection();		
 		String sql = "UPDATE solicitacao SET motorista = '" + motorista + "', respostaPontosSugeridos = '" + pontos + "'"
@@ -105,7 +105,7 @@ public class SolicitacaoDAO {
 	 * @throws SQLException
 	 */
 	public String solicitarVagaPontoEncontro(String caroneiro, String idCarona, String ponto) throws SQLException{
-		logger.info("Solicitando vaga - id do caroneiro: " + caroneiro);
+		logger.info("Executando método solicitarVagaPontoEncontro");
 		
 		Connection conexao = new ConnectionFactory().getConnection();		
 		String sql = "UPDATE solicitacao SET pontoEncontro = '" + ponto
@@ -126,6 +126,8 @@ public class SolicitacaoDAO {
 	 * @throws SQLException
 	 */
 	private String idSolicitacao(String caroneiro, String idCarona) throws SQLException{
+		logger.info("Executando método idSolicitacao");
+		
 		String idSolicitacao = "";		
 		Connection conexao = new ConnectionFactory().getConnection();		
 		String sql = "SELECT id FROM solicitacao"
@@ -149,7 +151,7 @@ public class SolicitacaoDAO {
 	 * @throws SQLException
 	 */
 	public String origemSolicitacao(String idSolicitacao) throws SQLException{
-		logger.info("Retornando origem da carona a partir de solicitação");
+		logger.info("Executando método origemSolicitacao");
 		
 		String sql = "SELECT origem FROM solicitacao, carona WHERE solicitacao.id = '" + idSolicitacao + "' AND solicitacao.carona = carona.id";
 		return retornaInformacaoSolicitacao(idSolicitacao, sql, "origem");
@@ -163,7 +165,7 @@ public class SolicitacaoDAO {
 	 * @throws SQLException
 	 */
 	public String destinoSolicitacao(String idSolicitacao) throws SQLException{
-		logger.info("Retornando destino da carona a partir de solicitação");
+		logger.info("Executando método destinoSolicitacao");
 		
 		String sql = "SELECT destino FROM solicitacao, carona WHERE solicitacao.id = '" + idSolicitacao + "' AND solicitacao.carona = carona.id";
 		return retornaInformacaoSolicitacao(idSolicitacao, sql, "destino");
@@ -177,7 +179,7 @@ public class SolicitacaoDAO {
 	 * @throws SQLException
 	 */
 	public String donoCarona(String idSolicitacao) throws SQLException{
-		logger.info("Retornando motorista da carona a partir de solicitação");
+		logger.info("Executando método donoCarona");
 		
 		String sql = "SELECT nome FROM solicitacao, carona, usuario WHERE solicitacao.id = '" + idSolicitacao +
 				"' AND solicitacao.carona = carona.id AND carona.idUsuario = usuario.id";
@@ -192,7 +194,7 @@ public class SolicitacaoDAO {
 	 * @throws SQLException
 	 */
 	public String donoSolicitacao(String idSolicitacao) throws SQLException{
-		logger.info("Retornando caroneiro da carona a partir de solicitação");
+		logger.info("Executando método donoSolicitacao");
 		
 		String sql = "SELECT nome FROM solicitacao, usuario WHERE solicitacao.id = '" + idSolicitacao + "' AND solicitacao.caroneiro = usuario.id";
 		return retornaInformacaoSolicitacao(idSolicitacao, sql, "nome");
@@ -206,7 +208,7 @@ public class SolicitacaoDAO {
 	 * @throws SQLException
 	 */
 	public String pontoEncontro(String idSolicitacao) throws SQLException{
-		logger.info("Retornando ponto de encontro da carona");
+		logger.info("Executando método pontoEncontro");
 		
 		String sql = "SELECT pontoEncontro FROM solicitacao WHERE solicitacao.id = '" + idSolicitacao + "'";
 		return retornaInformacaoSolicitacao(idSolicitacao, sql, "pontoEncontro");
@@ -223,6 +225,8 @@ public class SolicitacaoDAO {
 	 * @throws SQLException
 	 */
 	private String retornaInformacaoSolicitacao(String idSolicitacao, String sql, String coluna) throws SQLException{
+		logger.info("Executando método retornaInformacaoSolicitacao");
+		
 		String informacao = "";		
 		Connection conexao = new ConnectionFactory().getConnection();
 		PreparedStatement stmt = conexao.prepareStatement(sql);
@@ -244,7 +248,7 @@ public class SolicitacaoDAO {
 	 * @throws Exception
 	 */
 	public void aceitarSolicitacaoPontoEncontro(String motorista, String idSolicitacao) throws Exception{
-		logger.info("Aceitar solicitação do caroneiro para uma carona - id do motorista: " + motorista);
+		logger.info("Executando método aceitarSolicitacaoPontoEncontro");
 		
 		Connection conexao = new ConnectionFactory().getConnection();		
 		String sql = "UPDATE solicitacao SET solicitacaoAceita = true, motorista = '" + motorista
@@ -266,6 +270,8 @@ public class SolicitacaoDAO {
 	 * @throws SQLException
 	 */
 	private int recuperaVagasCarona(String idSolicitacao) throws SQLException{
+		logger.info("Executando método recuperaVagasCarona");
+		
 		int vagas = 0;		
 		Connection conexao = new ConnectionFactory().getConnection();		
 		String sql = "SELECT vagas FROM carona, solicitacao"
@@ -289,7 +295,9 @@ public class SolicitacaoDAO {
 	 * @param vagas nova quantidade de vagas da carona
 	 * @throws SQLException
 	 */
-	private void atualizaVagasCarona(String idSolicitacao, int vagas) throws SQLException{				
+	private void atualizaVagasCarona(String idSolicitacao, int vagas) throws SQLException{	
+		logger.info("Executando método atualizaVagasCarona");
+		
 		Connection conexao = new ConnectionFactory().getConnection();		
 		String sql = "UPDATE carona, solicitacao SET vagas = '" + vagas
 				+ "' WHERE solicitacao.id = '" + idSolicitacao + "' AND carona.id = solicitacao.carona";		
@@ -307,7 +315,7 @@ public class SolicitacaoDAO {
 	 * @throws SQLException
 	 */
 	public boolean verificaSolicitacaoAceita(String idSolicitacao) throws SQLException{
-		logger.info("Verificando se a solicitação já foi aceita");
+		logger.info("Executando método verificaSolicitacaoAceita");
 		
 		boolean solicitacaoAceita = false;		
 		Connection conexao = new ConnectionFactory().getConnection();		
@@ -334,7 +342,7 @@ public class SolicitacaoDAO {
 	 * @throws Exception
 	 */
 	public void desistirRequisicao(String idSessao, String idCarona, String idSolicitacao) throws Exception{
-		logger.info("Desistindo da solicitação");
+		logger.info("Executando método desistirRequisicao");
 		
 		Connection conexao = new ConnectionFactory().getConnection();		
 		String sql = "UPDATE solicitacao SET solicitacaoDesistida = true"
@@ -359,7 +367,7 @@ public class SolicitacaoDAO {
 	 * @throws SQLException
 	 */
 	public String solicitarVaga(String idSessao, String idCarona) throws SQLException{
-		logger.info("Solicitando vaga na carona - id da sessão: " + idSessao);
+		logger.info("Executando método solicitarVaga");
 		
 		String idSolicitacao = "";
 		if(!solicitacaoExiste(idSessao, idCarona)){
@@ -400,7 +408,7 @@ public class SolicitacaoDAO {
 	 * @throws SQLException
 	 */
 	public boolean solicitacaoExiste(String idSessao, String idCarona) throws SQLException{
-		logger.info("Verificando se solicitação existe");
+		logger.info("Executando método solicitacaoExiste");
 		
 		boolean solicitacaoExiste = false;		
 		Connection conexao = new ConnectionFactory().getConnection();		
@@ -423,7 +431,7 @@ public class SolicitacaoDAO {
 	 * @throws Exception
 	 */
 	public void rejeitarSolicitacao(String idSessao, String idSolicitacao) throws Exception{
-		logger.info("Rejeitando solicitação - id da sessão: " + idSessao);
+		logger.info("Executando método rejeitarSolicitacao");
 		
 		Connection conexao = new ConnectionFactory().getConnection();		
 		String sql = "UPDATE solicitacao SET solicitacaoRejeitada = true, motorista = '" + idSessao
@@ -442,7 +450,7 @@ public class SolicitacaoDAO {
 	 * @throws SQLException
 	 */
 	public boolean verificaSolicitacaoRejeitada(String idSolicitacao) throws SQLException{
-		logger.info("Verificando se a solicitação já está rejeitada");
+		logger.info("Executando método verificaSolicitacaoRejeitada");
 		
 		boolean solicitacaoRejeitada = false;		
 		Connection conexao = new ConnectionFactory().getConnection();		
@@ -468,6 +476,8 @@ public class SolicitacaoDAO {
 	 * @throws SQLException
 	 */
 	public List<String> getSolicitacoesConfirmadas(String idSessao, String idCarona) throws SQLException{
+		logger.info("Executando método getSolicitacoesConfirmadas");
+		
 		List<String> solicitacoesConfirmadas = new ArrayList<String>();		
 		Connection conexao = new ConnectionFactory().getConnection();		
 		String sql = "SELECT id FROM solicitacao WHERE motorista = '" + idSessao + "' AND carona = '" + idCarona
@@ -492,6 +502,8 @@ public class SolicitacaoDAO {
 	 * @throws SQLException
 	 */
 	public List<String> getSolicitacoesPendentes(String idSessao, String idCarona) throws SQLException{
+		logger.info("Executando método getSolicitacoesPendentes");
+		
 		List<String> solicitacoesPendentes = new ArrayList<String>();		
 		Connection conexao = new ConnectionFactory().getConnection();		
 		String sql = "SELECT id FROM solicitacao WHERE motorista = '" + idSessao + "' AND carona = '" + idCarona
@@ -516,6 +528,8 @@ public class SolicitacaoDAO {
 	 * @throws SQLException
 	 */
 	public List<String> getPontosEncontro(String idSessao, String idCarona) throws SQLException{
+		logger.info("Executando método getPontosEncontro");
+		
 		List<String> pontosEncontro = new ArrayList<String>();		
 		Connection conexao = new ConnectionFactory().getConnection();		
 		String sql = "SELECT pontoEncontro FROM solicitacao WHERE motorista = '" + idSessao + "' AND carona = '" + idCarona + "'";
@@ -541,6 +555,8 @@ public class SolicitacaoDAO {
 	 * @throws SQLException
 	 */
 	public List<String> getPontosSugeridos(String idSessao, String idCarona) throws SQLException{
+		logger.info("Executando método getPontosSugeridos");
+		
 		List<String> pontosSugeridos = new ArrayList<String>();		
 		Connection conexao = new ConnectionFactory().getConnection();	
 		String sql = "SELECT pontosSugeridos FROM solicitacao WHERE motorista = '" + idSessao + "' AND carona = '" + idCarona + "'";
@@ -566,6 +582,8 @@ public class SolicitacaoDAO {
 	 * @throws SQLException
 	 */
 	public boolean vagaUsuarioCaronaPorLogin(String idCarona, String loginCaroneiro) throws SQLException{
+		logger.info("Executando método vagaUsuarioCaronaPorLogin");
+		
 		boolean possuiVaga = false;		
 		Connection conexao = new ConnectionFactory().getConnection();		
 		String sql = "SELECT solicitacao.id FROM solicitacao, usuario WHERE carona = '" + idCarona + "'"
@@ -590,6 +608,8 @@ public class SolicitacaoDAO {
 	 * @throws SQLException
 	 */
 	public boolean vagaUsuarioCaronaPorSessao(String idCarona, String idSessao) throws SQLException{
+		logger.info("Executando método vagaUsuarioCaronaPorSessao");
+		
 		boolean possuiVaga = false;		
 		Connection conexao = new ConnectionFactory().getConnection();		
 		String sql = "SELECT solicitacao.id FROM solicitacao, usuario WHERE carona = '" + idCarona + "'"
@@ -613,6 +633,8 @@ public class SolicitacaoDAO {
 	 * @throws SQLException
 	 */
 	public List<String> historicoVagasCaronas(String login) throws SQLException{
+		logger.info("Executando método historicoVagasCaronas");
+		
 		List<String> caronas = new ArrayList<String>();		
 		Connection conexao = new ConnectionFactory().getConnection();		
 		String sql = "SELECT solicitacao.carona FROM solicitacao, usuario WHERE usuario.login = '" + login + "'"
@@ -629,11 +651,149 @@ public class SolicitacaoDAO {
 	}
 	
 	/**
+	 * Recebe o login do usuário e retorna o total de caronas desse usuário marcadas como segura e tranquila.
+	 * 
+	 * @param login login do usuário
+	 * @return total de caronas do usuário marcada como segura e tranquila
+	 * @throws SQLException
+	 */
+	public int caronasSeguras(String login) throws SQLException{
+		logger.info("Executando método caronasSeguras");
+		
+		int resultado = 0;		
+		Connection conexao = new ConnectionFactory().getConnection();
+		String sql = "SELECT count(*) FROM solicitacao, usuario WHERE usuario.login = '" + login +"'"
+				+ " AND solicitacao.motorista = usuario.id AND segura = true";
+		PreparedStatement stmt = conexao.prepareStatement(sql);
+		ResultSet rs = stmt.executeQuery();		
+		while(rs.next()){
+			resultado = rs.getInt("count(*)");
+		}		
+		stmt.execute();
+		stmt.close();
+		conexao.close();		
+		return resultado;
+	}
+	
+	/**
+	 * Recebe o login do usuário e retorna o total de caronas que não funcionaram.
+	 * 
+	 * @param login login da carona
+	 * @return total de caronas que não funcionaram
+	 * @throws SQLException
+	 */
+	public int caronasQueNaoFuncionou(String login) throws SQLException{
+		logger.info("Executando método caronasQueNaoFuncionou");
+		
+		int resultado = 0;		
+		Connection conexao = new ConnectionFactory().getConnection();
+		String sql = "SELECT count(*) FROM solicitacao, usuario WHERE usuario.login = '" + login +"'"
+				+ " AND solicitacao.motorista = usuario.id AND naoFuncionou = true";
+		PreparedStatement stmt = conexao.prepareStatement(sql);
+		ResultSet rs = stmt.executeQuery();		
+		while(rs.next()){
+			resultado = rs.getInt("count(*)");
+		}		
+		stmt.execute();
+		stmt.close();
+		conexao.close();		
+		return resultado;
+	}
+	
+	/**
+	 * Recebe o id da sessão do usuário e o id da carona e marca a carona como segura e tranquila.
+	 * 
+	 * @param idSessao id da sessão do usuário
+	 * @param idCarona id da carona
+	 * @throws SQLException
+	 */
+	public void marcarComoSeguraTranquila(String idSessao, String idCarona) throws SQLException{
+		logger.info("Executando método marcarComoSeguraTranquila");
+		
+		Connection conexao = new ConnectionFactory().getConnection();		
+		String sql = "UPDATE solicitacao SET segura = true WHERE caroneiro = '" + idSessao + "'"
+				+ " AND carona = '" + idCarona + "'";		
+		PreparedStatement stmt = conexao.prepareStatement(sql);		
+		stmt.execute();
+		stmt.close();		
+		conexao.close();
+	}
+	
+	/**
+	 * Recebe o id da sessão do usuário e o id da carona e marca a carona como não funcionou.
+	 * 
+	 * @param idSessao id da sessão do usuário
+	 * @param idCarona id da carona
+	 * @throws SQLException
+	 */
+	public void marcarNaoFuncionou(String idSessao, String idCarona) throws SQLException{
+		logger.info("Executando método marcarNaoFuncionou");
+		
+		Connection conexao = new ConnectionFactory().getConnection();		
+		String sql = "UPDATE solicitacao SET naoFuncionou = true WHERE caroneiro = '" + idSessao + "'"
+				+ " AND carona = '" + idCarona + "'";		
+		PreparedStatement stmt = conexao.prepareStatement(sql);		
+		stmt.execute();
+		stmt.close();		
+		conexao.close();
+	}
+	
+	/**
+	 * Recebe o id da carona e retorna a lista de usuários que possui vaga na carona.
+	 * 
+	 * @param idCarona id da carona
+	 * @return lista contendo os usuários que possui vaga na carona
+	 * @throws SQLException
+	 */
+	public List<String> usuariosCarona(String idCarona) throws SQLException{
+		logger.info("Executando método usuariosCarona");
+		
+		List<String> usuarios = new ArrayList<String>();		
+		Connection conexao = new ConnectionFactory().getConnection();		
+		String sql = "SELECT usuario.login FROM solicitacao, usuario WHERE solicitacao.carona = '" + idCarona + "'"
+				+ " AND solicitacao.caroneiro = usuario.id";
+		PreparedStatement stmt = conexao.prepareStatement(sql);
+		ResultSet rs = stmt.executeQuery();		
+		while (rs.next()) {			
+			usuarios.add(rs.getString("usuario.login"));
+		}
+		stmt.execute();
+		stmt.close();
+		conexao.close();								
+		return usuarios;
+	}
+	
+	/**
+	 * Retorna os usuários que tem preferência em uma carona.
+	 * 
+	 * @return lista contendo os usuários que tem preferência em uma carona
+	 * @throws SQLException
+	 */
+	public List<String> getUsuariosPreferenciaisCarona() throws SQLException{
+		logger.info("Executando método getUsuariosPreferenciaisCarona");
+		
+		List<String> usuarios = new ArrayList<String>();		
+		Connection conexao = new ConnectionFactory().getConnection();		
+		String sql = "SELECT caroneiro FROM solicitacao WHERE segura = true";
+		PreparedStatement stmt = conexao.prepareStatement(sql);
+		ResultSet rs = stmt.executeQuery();		
+		while (rs.next()) {			
+			usuarios.add(rs.getString("caroneiro"));
+		}
+		stmt.execute();
+		stmt.close();
+		conexao.close();								
+		return usuarios;
+	}
+	
+	/**
 	 * Apaga todas as solicitações do banco de dados.
 	 * 
 	 * @throws SQLException
 	 */
 	public void apagarSolicitacoes() throws SQLException{
+		logger.info("Executando método apagarSolicitacoes");
+		
 		Connection conexao1 = new ConnectionFactory().getConnection();
 		String sql1 = "DELETE FROM solicitacao WHERE id > 0";
 		PreparedStatement stmt1 = conexao1.prepareStatement(sql1);

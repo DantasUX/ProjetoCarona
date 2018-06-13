@@ -53,5 +53,7 @@ public class SolicitacaoDAOTest {
 		assertEquals(dao.solicitarVaga("2", "2"), "2");
 		dao.rejeitarSolicitacao("1", "2");
 		dao.verificaSolicitacaoRejeitada("2");
+		assertEquals(dao.caronasSeguras("mark"), 0);
+		assertEquals(dao.caronasQueNaoFuncionou("mark"), 0);
 	}
 }

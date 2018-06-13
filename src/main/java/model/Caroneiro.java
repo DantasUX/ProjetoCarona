@@ -1,6 +1,9 @@
 package model;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.LogManager;
@@ -37,7 +40,7 @@ public class Caroneiro {
 		CaronaDAO dao = CaronaDAO.getInstance();
 		if(origem.equals("-") || origem.equals("()") || origem.equals("!") || origem.equals("!?")){
 			Exception e = new Exception("Origem inválida");
-			logger.error("Origem inválido - origem: " + origem, e);
+			logger.error("Origem inválida - origem: " + origem, e);
 			throw e;
 		}
 		if(destino.equals(".") || destino.equals("()") || destino.equals("!?")){
@@ -49,7 +52,7 @@ public class Caroneiro {
 	}
 	
 	/**
-	 * Recebe a cidade, a origem e o destino da carona municipal, faz a verificação necessária de erros e localiza as caronas.
+	 * Recebe a cidade, a origem e o destino da carona municipal, faz a verificação necessária de erros e localiza as caronas municipais.
 	 * 
 	 * @param cidade cidade da carona
 	 * @param origem origem da carona
@@ -70,7 +73,7 @@ public class Caroneiro {
 	}
 	
 	/**
-	 * Recebe a cidade da carona municipal, faz a verificação necessária de erros e localiza as caronas.
+	 * Recebe a cidade da carona municipal, faz a verificação necessária de erros e localiza as caronas municipais.
 	 * 
 	 * @param cidade cidade da carona
 	 * @return um map contendo o id e a carona
@@ -122,7 +125,7 @@ public class Caroneiro {
 		else if(atributo.equals("destino")){
 			return dao.destinoCarona(idCarona);
 		}
-		else if(atributo.equals("data")){
+		else if(atributo.equals("data") || atributo.equals("dataIda")){
 			return dao.dataCarona(idCarona);
 		}
 		else if(atributo.equals("vagas")){
@@ -131,12 +134,40 @@ public class Caroneiro {
 		else if(atributo.equals("ehMunicipal")){
 			return dao.caronaMunicipal(idCarona)+"";
 		}
+		else if(atributo.equals("minimoCaroneiros")){
+			return dao.minimoCaroneiro(idCarona)+"";
+		}
+		else if(atributo.equals("expired")){
+			return caronaExpirada(idCarona)+"";
+		}
 		else{
 			Exception e = new Exception("Atributo inexistente");
 			logger.error("Atributo inexistente - atributo: " + atributo, e);
 			throw e;
 		}
-	}	
+	}
+	
+	/**
+	 * Recebe o id da carona e verifica se a carona está expirada ou não.
+	 * 
+	 * @param idCarona id da carona
+	 * @return true = carona expirada, false = carona não expirada
+	 * @throws SQLException
+	 */
+	private boolean caronaExpirada(String idCarona) throws SQLException{
+		logger.info("Executando método caronaExpirada");
+		
+		CaronaDAO c = CaronaDAO.getInstance();		
+		DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/uuuu");
+		String dataAgora = LocalDate.parse(LocalDate.now().toString()).format(formato);
+		LocalDate data = LocalDate.parse(dataAgora, formato);
+		LocalDate dataCarona = LocalDate.parse(c.dataCarona(idCarona), formato);
+		
+		if(data.isAfter(dataCarona)){
+			return true;
+		}
+		return false;
+	}
 	
 	/**
 	 * Recebe o id da carona, faz a verificação necessária de erros e retorna o seu trajeto, ou seja,
@@ -159,7 +190,7 @@ public class Caroneiro {
 			Exception e = new Exception("Trajeto Inexistente");
 			logger.error("Trajeto inexistente - id carona: " + idCarona, e);
 			throw e;
-		}		
+		}
 		return dao.trajetoCarona(idCarona);
 	}
 	
@@ -199,6 +230,8 @@ public class Caroneiro {
 	 * @throws Exception
 	 */
 	public String sugerirPontoEncontro(String idSessao, String idCarona, String pontos) throws Exception{
+		logger.info("Executando método sugerirPontoEncontro");
+		
 		if(pontos.equals("")){
 			Exception e = new Exception("Ponto Inválido");
 			logger.error("Ponto Inválido - pontos: " + pontos, e);
@@ -220,6 +253,8 @@ public class Caroneiro {
 	 * @throws SQLException
 	 */
 	public String solicitarVagaPontoEncontro(String idSessao, String idCarona, String ponto) throws SQLException{
+		logger.info("Executando método solicitarVagaPontoEncontro");
+		
 		SolicitacaoDAO s = SolicitacaoDAO.getInstance();
 		return s.solicitarVagaPontoEncontro(idSessao, idCarona, ponto);
 	}
@@ -230,10 +265,23 @@ public class Caroneiro {
 	 * @param idSessao id da sessão do usuário
 	 * @param idCarona id da carona
 	 * @return id da solicitação
-	 * @throws SQLException
+	 * @throws Exception 
 	 */
-	public String solicitarVaga(String idSessao, String idCarona) throws SQLException{
+	public String solicitarVaga(String idSessao, String idCarona) throws Exception{
+		logger.info("Executando método solicitarVaga");
+		
 		SolicitacaoDAO s = SolicitacaoDAO.getInstance();
+		if(isCaronaPreferencial(idCarona)){
+			List<String> usuarios = usuariosPreferenciais();
+			if(!usuarios.contains(idSessao)){
+				Exception e = new Exception("Usuário não está na lista preferencial da carona");
+				logger.error("Usuário não está na lista preferencial da carona - idSessao: " + idSessao, e);
+				throw e;
+			}
+			else{
+				return s.solicitarVaga(idSessao, idCarona);
+			}
+		}
 		return s.solicitarVaga(idSessao, idCarona);
 	}
 	
@@ -247,6 +295,8 @@ public class Caroneiro {
 	 * @throws Exception
 	 */
 	public void reviewCarona(String idSessao, String idCarona, String review) throws Exception{
+		logger.info("Executando método reviewCarona");
+		
 		CaronaDAO c = CaronaDAO.getInstance();
 		SolicitacaoDAO s = SolicitacaoDAO.getInstance();
 		if(!s.vagaUsuarioCaronaPorSessao(idCarona, idSessao)){
@@ -255,10 +305,10 @@ public class Caroneiro {
 			throw e;
 		}
 		if(review.equals("segura e tranquila")){
-			c.marcarComoSeguraTranquila(idSessao, idCarona);
+			s.marcarComoSeguraTranquila(idSessao, idCarona);
 		}
 		else if(review.equals("não funcionou")){
-			c.marcarNaoFuncionou(idSessao, idCarona);
+			s.marcarNaoFuncionou(idSessao, idCarona);
 		}
 		else{
 			Exception e = new Exception("Opção inválida.");
@@ -281,6 +331,8 @@ public class Caroneiro {
 	 * @throws Exception
 	 */
 	public String cadastrarInteresse(String idSessao, String origem, String destino, String data, String horaInicio, String horaFim) throws Exception{
+		logger.info("Executando método cadastrarInteresse");
+		
 		InteresseDAO i = InteresseDAO.getInstance();		
 		if(data == null){
 			Exception e = new Exception("Data inválida");
@@ -298,5 +350,70 @@ public class Caroneiro {
 			throw e;
 		}		
 		return i.cadastrarInteresse(idSessao, origem, destino, data, horaInicio, horaFim);
+	}
+	
+	/**
+	 * Recebe o id da carona e retorna o mínimo de caroneiros da carona relâmpago.
+	 * 
+	 * @param idCarona id da carona
+	 * @return mínimo de caroneiro da carona relâmpago
+	 * @throws SQLException
+	 */
+	public String getMinimoCaroneiros(String idCarona) throws SQLException{
+		logger.info("Executando método getMinimoCaroneiros");
+		
+		CaronaDAO c = CaronaDAO.getInstance();
+		return c.minimoCaroneiro(idCarona)+"";
+	}
+	
+	/**
+	 * Recebe o id da carona relâmpago e retorna informações como origem, destino, data e hora.
+	 * 
+	 * @param idCarona id da carona
+	 * @return informações como origem, destino, data e hora
+	 * @throws Exception
+	 */
+	public String getCaronaRelampago(String idCarona) throws Exception{
+		logger.info("Executando método getCaronaRelampago");
+		
+		CaronaDAO c = CaronaDAO.getInstance();
+		if(idCarona == null){
+			Exception e = new Exception("Carona Inválida");
+			logger.error("Carona Inválida - idCarona: " + idCarona, e);
+			throw e;
+		}
+		if(!c.verificaCarona(idCarona)){
+			Exception e = new Exception("Carona Inexistente");
+			logger.error("Carona Inexistente - idCarona: " + idCarona, e);
+			throw e;
+		}
+		return c.informacoesCarona(idCarona);
+	}
+	
+	/**
+	 * Recebe o id da carona e verifica se a carona é preferencial.
+	 * 
+	 * @param idCarona id da carona
+	 * @return true = carona preferencial, false = carona não preferencial
+	 * @throws SQLException
+	 */
+	public boolean isCaronaPreferencial(String idCarona) throws SQLException{
+		logger.info("Executando método isCaronaPreferencial");
+		
+		CaronaDAO c = CaronaDAO.getInstance();
+		return c.isCaronaPreferencial(idCarona);
+	}
+	
+	/**
+	 * Retorna a lista de usuários que tem preferência em uma carona.
+	 * 
+	 * @return lista contendo os usuários que tem preferência em uma carona
+	 * @throws SQLException
+	 */
+	private List<String> usuariosPreferenciais() throws SQLException{
+		logger.info("Executando método usuariosPreferenciais");
+		
+		SolicitacaoDAO dao = SolicitacaoDAO.getInstance();
+		return dao.getUsuariosPreferenciaisCarona();
 	}
 }

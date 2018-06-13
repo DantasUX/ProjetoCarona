@@ -1,6 +1,9 @@
 package model;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -37,6 +40,43 @@ public class Sistema {
 	}
 	
 	/**
+	 * Recebe o id da carona e verifica se a carona está expirada ou não.
+	 * 
+	 * @param idCarona id da carona
+	 * @return id da carona = carona expirada, "" = carona não expirada
+	 * @throws SQLException
+	 */
+	public String setCaronaRelampagoExpired(String idCarona) throws SQLException{
+		logger.info("Executando método setCaronaRelampagoExpired");
+		
+		CaronaDAO c = CaronaDAO.getInstance();		
+		DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/uuuu");
+		String dataAgora = LocalDate.parse(LocalDate.now().toString()).format(formato);
+		LocalDate data = LocalDate.parse(dataAgora, formato);
+		LocalDate dataCarona = LocalDate.parse(c.dataCarona(idCarona), formato);
+		
+		if(data.isAfter(dataCarona)){
+			return idCarona;
+		}
+		return "";
+	}
+	
+	/**
+	 * Recebe o id da carona expirada e o atributo emailTo e retorna lista de usuários que tem vaga na carona expirada.
+	 * 
+	 * @param idExpired id da carona expirada
+	 * @param atributo emailTo
+	 * @return lista contendo os usuários que tem vaga na carona expirada.
+	 * @throws SQLException
+	 */
+	public List<String> getAtributoExpired(String idExpired, String atributo) throws SQLException{
+		logger.info("Executando método getAtributoExpired");
+		
+		SolicitacaoDAO dao = SolicitacaoDAO.getInstance();
+		return dao.usuariosCarona(idExpired);
+	}
+	
+	/**
 	 * Reinicia o sistema.
 	 */
 	public void reiniciarSistema(){
@@ -65,6 +105,7 @@ public class Sistema {
 	 * @throws SQLException
 	 */
 	public void zerarSistema() throws SQLException{
+		logger.info("Executando método zerarSistema");
 		MensagemDAO m = MensagemDAO.getInstance();
 		m.apagarMensagens();
 		InteresseDAO i = InteresseDAO.getInstance();

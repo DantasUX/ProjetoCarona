@@ -19,6 +19,8 @@ public class Carona {
 	private LocalTime hora;
 	private int vagas;
 	private boolean municipal;
+	private LocalDate dataVolta;
+	private int minimoCaroneiros;
 	private String idUsuario;
 	
 	/**
@@ -46,6 +48,8 @@ public class Carona {
 		this.hora = saida;
 		this.vagas = vagas;
 		this.municipal = false;
+		this.dataVolta = null;
+		this.minimoCaroneiros = 0;
 	}
 	
 	/**
@@ -67,7 +71,32 @@ public class Carona {
 		this.hora = saida;
 		this.vagas = vagas;
 		this.municipal = true;
-	}	
+		this.dataVolta = null;
+		this.minimoCaroneiros = 0;
+	}
+	
+	/**
+	 * Construtor que recebe a origem, o destino, a data de ida, a data de volta, a hora e o mínimo de caroneiros necessários para a carona.
+	 * Cria uma carona relâmpago.
+	 * 
+	 * @param origem origem da carona
+	 * @param destino destino da carona
+	 * @param dataIda data de ida da carona
+	 * @param dataVolta data de volta da carona
+	 * @param hora hora da carona
+	 * @param minimoCaroneiros mínimo de caroneiros necessários para a carona
+	 */
+	public Carona(String origem, String destino, LocalDate dataIda, LocalDate dataVolta, LocalTime hora,
+			int minimoCaroneiros) {
+		this.origem = origem;
+		this.destino = destino;
+		this.data = dataIda;
+		this.dataVolta = dataVolta;
+		this.hora = hora;
+		this.minimoCaroneiros = minimoCaroneiros;
+		this.cidade = null;
+		this.vagas = -1;
+	}
 
 	/**
 	 * 
@@ -85,6 +114,10 @@ public class Carona {
 		return destino;
 	}	
 
+	/**
+	 * 
+	 * @return cidade da carona
+	 */
 	public String getCidade() {
 		return cidade;
 	}
@@ -121,6 +154,30 @@ public class Carona {
 	public String getIdUsuario() {
 		return idUsuario;
 	}
+	
+	/**
+	 * 
+	 * @return true = carona municipal
+	 */
+	public boolean getMunicipal() {
+		return municipal;
+	}
+
+	/**
+	 * 
+	 * @return data de volta da carona
+	 */
+	public LocalDate getDataVolta() {
+		return dataVolta;
+	}
+
+	/**
+	 * 
+	 * @return mínimo de caroneiros da carona
+	 */
+	public int getMinimoCaroneiros() {
+		return minimoCaroneiros;
+	}
 
 	/**
 	 * 
@@ -128,13 +185,5 @@ public class Carona {
 	 */
 	public void setIdUsuario(String idUsuario) {
 		this.idUsuario = idUsuario;
-	}
-
-	/**
-	 * 
-	 * @return true = carona municipal
-	 */
-	public boolean getMunicipal() {
-		return municipal;
-	}		
+	}	
 }

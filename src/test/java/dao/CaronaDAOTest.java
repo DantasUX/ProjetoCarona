@@ -103,8 +103,6 @@ public class CaronaDAOTest {
 		assertEquals(dao.historicoCaronas("mark").size(), 5);
 		assertEquals(dao.getCaronaUsuario("1", 1), "1");
 		assertEquals(dao.getCaronaUsuario("1", 2), "2");
-		assertEquals(dao.caronasSeguras("mark"), 0);
-		assertEquals(dao.caronasQueNaoFuncionou("mark"), 0);
 	}
 
 }

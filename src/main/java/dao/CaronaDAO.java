@@ -43,7 +43,7 @@ public class CaronaDAO {
 	 * @return CaronaDAO
 	 */
 	public static CaronaDAO getInstance(){
-		logger.info("Abrindo conexão com a base de dados de caronas");
+		logger.info("Abrindo conexão com a base de dados de carona");
 		
 		if(instanciaUnica == null){
 			instanciaUnica = new CaronaDAO();			
@@ -59,22 +59,29 @@ public class CaronaDAO {
 	 * @throws SQLException 
 	 */
 	public String cadastrarCarona(Carona carona) throws SQLException{
-		logger.info("Cadastrando carona");
+		logger.info("Executando método cadastrarCarona");
 		
 		String idCarona = "";		
 		Connection conexao = new ConnectionFactory().getConnection();		
-		String sql = "INSERT INTO carona " + "(origem,destino,cidade,data,hora,vagas,municipal,idUsuario) "
-				+ "values (?,?,?,?,?,?,?,?)";		
+		String sql = "INSERT INTO carona " + "(origem,destino,cidade,data,dataVolta,hora,vagas,municipal,minimoCaroneiros,idUsuario) "
+				+ "values (?,?,?,?,?,?,?,?,?,?)";		
 		DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/uuuu");		
 		PreparedStatement stmt = conexao.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 		stmt.setString(1, carona.getOrigem());
 		stmt.setString(2, carona.getDestino());
 		stmt.setString(3, carona.getCidade());
 		stmt.setString(4, LocalDate.parse(carona.getData(), formato).toString());
-		stmt.setString(5, carona.getHora());
-		stmt.setInt(6, carona.getVagas());
-		stmt.setBoolean(7, carona.getMunicipal());
-		stmt.setString(8, carona.getIdUsuario());		
+		if(carona.getDataVolta() == null){
+			stmt.setString(5, null);
+		}
+		else{
+			stmt.setString(5, carona.getDataVolta().toString());
+		}
+		stmt.setString(6, carona.getHora());
+		stmt.setInt(7, carona.getVagas());
+		stmt.setBoolean(8, carona.getMunicipal());
+		stmt.setInt(9, carona.getMinimoCaroneiros());
+		stmt.setString(10, carona.getIdUsuario());		
 		stmt.executeUpdate();
 		ResultSet rs = stmt.getGeneratedKeys();		
 		while(rs.next()){
@@ -105,7 +112,7 @@ public class CaronaDAO {
 	 * @throws SQLException 
 	 */
 	public Map<String, Carona> localizarCarona(String origem, String destino) throws SQLException{
-		logger.info("Localizando carona - origem: " + origem + " - destino: " + destino);
+		logger.info("Executando método localizarCarona");
 		
 		Map<String, Carona> caronasLocalizadas = new LinkedHashMap<String, Carona>();		
 		String sql = "";		
@@ -151,8 +158,9 @@ public class CaronaDAO {
 	 * @throws Exception
 	 */
 	public Map<String, Carona> localizarCaronaMunicipal(String cidade, String origem, String destino) throws SQLException{
-		Map<String, Carona> caronasMunicipaisLocalizadas = new LinkedHashMap<String, Carona>();
+		logger.info("Executando método localizarCaronaMunicipal");
 		
+		Map<String, Carona> caronasMunicipaisLocalizadas = new LinkedHashMap<String, Carona>();		
 		Connection conexao = new ConnectionFactory().getConnection();
 		String sql = "SELECT * FROM carona WHERE municipal = true "
 				+ "AND cidade = '" + cidade + "' AND origem = '" + origem + "' AND destino = '" + destino + "'";
@@ -180,8 +188,9 @@ public class CaronaDAO {
 	 * @throws Exception
 	 */
 	public Map<String, Carona> localizarCaronaMunicipal(String cidade) throws SQLException{
-		Map<String, Carona> caronasMunicipaisLocalizadas = new LinkedHashMap<String, Carona>();
+		logger.info("Executando método localizarCaronaMunicipal");
 		
+		Map<String, Carona> caronasMunicipaisLocalizadas = new LinkedHashMap<String, Carona>();		
 		Connection conexao = new ConnectionFactory().getConnection();
 		String sql = "SELECT * FROM carona WHERE municipal = true "
 				+ "AND cidade = '" + cidade + "'";
@@ -209,7 +218,7 @@ public class CaronaDAO {
 	 * @throws SQLException 
 	 */
 	public String origemCarona(String idCarona) throws SQLException{
-		logger.info("Retornando origem da carona - id da carona: " + idCarona);
+		logger.info("Executando método origemCarona");
 		
 		return retornaInformacaoCarona(idCarona, "origem");
 	}	
@@ -222,7 +231,7 @@ public class CaronaDAO {
 	 * @throws SQLException 
 	 */
 	public String destinoCarona(String idCarona) throws SQLException{
-		logger.info("Retornando destino da carona - id da carona: " + idCarona);
+		logger.info("Executando método destinoCarona");
 		
 		return retornaInformacaoCarona(idCarona, "destino");
 	}
@@ -235,7 +244,7 @@ public class CaronaDAO {
 	 * @throws SQLException 
 	 */
 	public String dataCarona(String idCarona) throws SQLException{
-		logger.info("Retornando data da carona - id da carona: " + idCarona);
+		logger.info("Executando método dataCarona");
 		
 		String data = retornaInformacaoCarona(idCarona, "data");		
 		DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/uuuu");		
@@ -250,7 +259,7 @@ public class CaronaDAO {
 	 * @throws SQLException
 	 */
 	public String horaCarona(String idCarona) throws SQLException{
-		logger.info("Retornando hora da carona - id da carona: " + idCarona);
+		logger.info("Executando método horaCarona");
 		
 		String hora = retornaInformacaoCarona(idCarona, "hora");		
 		DateTimeFormatter formato = DateTimeFormatter.ofPattern("HH:mm");	
@@ -267,6 +276,8 @@ public class CaronaDAO {
 	 * @throws SQLException
 	 */
 	private String retornaInformacaoCarona(String idCarona, String coluna) throws SQLException{
+		logger.info("Executando método retornaInformacaoCarona");
+		
 		String informacao = "";		
 		Connection conexao = new ConnectionFactory().getConnection();		
 		String sql = "SELECT " + coluna + " FROM carona WHERE id = '" + idCarona + "'";
@@ -289,7 +300,7 @@ public class CaronaDAO {
 	 * @throws SQLException 
 	 */
 	public int vagasCarona(String idCarona) throws SQLException{
-		logger.info("Retornando vagas da carona - id da carona: " + idCarona);
+		logger.info("Executando método vagasCarona");
 		
 		int vagas = 0;		
 		Connection conexao = new ConnectionFactory().getConnection();		
@@ -306,6 +317,30 @@ public class CaronaDAO {
 	}
 	
 	/**
+	 * Recebe o id da carona relâmpago e retorna a quantidade de mínimo de caroneiros necessários para a carona.
+	 * 
+	 * @param idCarona id da carona
+	 * @return mínimo de caroneiros necessários para a carona relâmpago
+	 * @throws SQLException
+	 */
+	public int minimoCaroneiro(String idCarona) throws SQLException{
+		logger.info("Executando método minimoCaroneiro");
+		
+		int minimoCaroneiros = 0;		
+		Connection conexao = new ConnectionFactory().getConnection();		
+		String sql = "SELECT minimoCaroneiros FROM carona WHERE id = '" + idCarona + "'";
+		PreparedStatement stmt = conexao.prepareStatement(sql);
+		ResultSet rs = stmt.executeQuery();		
+		while (rs.next()) {
+			minimoCaroneiros = rs.getInt("minimoCaroneiros");
+		}
+		stmt.execute();
+		stmt.close();
+		conexao.close();		
+		return minimoCaroneiros;
+	}
+	
+	/**
 	 * Recebe o id da carona e retorna o seu trajeto, ou seja, a origem e o destino.
 	 * 
 	 * @param idCarona id da carona
@@ -313,7 +348,7 @@ public class CaronaDAO {
 	 * @throws SQLException 
 	 */
 	public String trajetoCarona(String idCarona) throws SQLException{
-		logger.info("Retornando trajeto da carona - id da carona: " + idCarona);
+		logger.info("Executando método trajetoCarona");
 		
 		return origemCarona(idCarona) + " - " + destinoCarona(idCarona);
 	}
@@ -326,7 +361,7 @@ public class CaronaDAO {
 	 * @throws SQLException 
 	 */
 	public String informacoesCarona(String idCarona) throws SQLException{
-		logger.info("Retornando informações da carona - id da carona: " + idCarona);
+		logger.info("Executando método informacoesCarona");
 		
 		String origem = origemCarona(idCarona);
 		String destino = destinoCarona(idCarona);
@@ -343,7 +378,7 @@ public class CaronaDAO {
 	 * @throws SQLException 
 	 */
 	public boolean verificaCarona(String idCarona) throws SQLException{
-		logger.info("Verificando se o id da carona é válido - id da carona: " + idCarona);
+		logger.info("Executando método verificaCarona");
 		
 		Connection conexao = new ConnectionFactory().getConnection();
 		String sql = "SELECT id FROM carona WHERE id = '" + idCarona +"'";
@@ -364,7 +399,7 @@ public class CaronaDAO {
 	 * @throws SQLException
 	 */
 	public List<String> historicoCaronas(String login) throws SQLException{
-		logger.info("Retornando o histórico de caronas do usuário - login: " + login);
+		logger.info("Executando método historicoCaronas");
 		
 		List<String> id = new ArrayList<String>();		
 		Connection conexao = new ConnectionFactory().getConnection();
@@ -390,7 +425,7 @@ public class CaronaDAO {
 	 * @throws SQLException
 	 */
 	public String getCaronaUsuario(String idSessao, int indexCarona) throws SQLException{
-		logger.info("Retornando uma carona pela posição de cadastro - id da sessão do usuário: " + idSessao);
+		logger.info("Executando método getCaronaUsuario");
 		
 		List<String> id  = new ArrayList<String>();
 		Connection conexao = new ConnectionFactory().getConnection();
@@ -414,10 +449,10 @@ public class CaronaDAO {
 	 * @throws SQLException
 	 */
 	public Map<String, Carona> getTodasCaronasUsuario(String idSessao) throws SQLException{
-		Map<String, Carona> caronasLocalizadas = new LinkedHashMap<String, Carona>();				
+		logger.info("Executando método getTodasCaronasUsuario");
 		
-		Connection conexao = new ConnectionFactory().getConnection();
-		
+		Map<String, Carona> caronasLocalizadas = new LinkedHashMap<String, Carona>();		
+		Connection conexao = new ConnectionFactory().getConnection();	
 		String sql = "SELECT * FROM carona WHERE idUsuario = '" + idSessao +"'";
 
 		PreparedStatement stmt = conexao.prepareStatement(sql);
@@ -440,90 +475,6 @@ public class CaronaDAO {
 	}
 	
 	/**
-	 * Recebe o login do usuário e retorna o total de caronas desse usuário marcadas como segura e tranquila.
-	 * 
-	 * @param login login do usuário
-	 * @return total de caronas do usuário marcada como segura e tranquila
-	 * @throws SQLException
-	 */
-	public int caronasSeguras(String login) throws SQLException{
-		logger.info("Retornando total de caronas marcadas como segura e tranquila - login: " + login);
-		
-		int resultado = 0;		
-		Connection conexao = new ConnectionFactory().getConnection();
-		String sql = "SELECT count(*) FROM carona, usuario WHERE usuario.login = '" + login +"'"
-				+ " AND carona.idUsuario = usuario.id AND carona.segura = true";
-		PreparedStatement stmt = conexao.prepareStatement(sql);
-		ResultSet rs = stmt.executeQuery();		
-		while(rs.next()){
-			resultado = rs.getInt("count(*)");
-		}		
-		stmt.execute();
-		stmt.close();
-		conexao.close();		
-		return resultado;
-	}
-	
-	/**
-	 * Recebe o login do usuário e retorna o total de caronas que não funcionaram.
-	 * 
-	 * @param login login da carona
-	 * @return total de caronas que não funcionaram
-	 * @throws SQLException
-	 */
-	public int caronasQueNaoFuncionou(String login) throws SQLException{
-		logger.info("Retornando total de caronas que não funcionaram - login: " + login);
-		
-		int resultado = 0;		
-		Connection conexao = new ConnectionFactory().getConnection();
-		String sql = "SELECT count(*) FROM carona, usuario WHERE usuario.login = '" + login +"'"
-				+ " AND carona.idUsuario = usuario.id AND carona.funcionou = false";
-		PreparedStatement stmt = conexao.prepareStatement(sql);
-		ResultSet rs = stmt.executeQuery();		
-		while(rs.next()){
-			resultado = rs.getInt("count(*)");
-		}		
-		stmt.execute();
-		stmt.close();
-		conexao.close();		
-		return resultado;
-	}
-	
-	/**
-	 * Recebe o id da sessão do usuário e o id da carona e marca a carona como segura e tranquila.
-	 * 
-	 * @param idSessao id da sessão do usuário
-	 * @param idCarona id da carona
-	 * @throws SQLException
-	 */
-	public void marcarComoSeguraTranquila(String idSessao, String idCarona) throws SQLException{
-		Connection conexao = new ConnectionFactory().getConnection();		
-		String sql = "UPDATE carona SET segura = true"
-				+ " WHERE id = '" + idCarona + "'";		
-		PreparedStatement stmt = conexao.prepareStatement(sql);		
-		stmt.execute();
-		stmt.close();		
-		conexao.close();
-	}
-	
-	/**
-	 * Recebe o id da sessão do usuário e o id da carona e marca a carona como não funcionou.
-	 * 
-	 * @param idSessao id da sessão do usuário
-	 * @param idCarona id da carona
-	 * @throws SQLException
-	 */
-	public void marcarNaoFuncionou(String idSessao, String idCarona) throws SQLException{
-		Connection conexao = new ConnectionFactory().getConnection();		
-		String sql = "UPDATE carona SET funcionou = false"
-				+ " WHERE id = '" + idCarona + "'";		
-		PreparedStatement stmt = conexao.prepareStatement(sql);		
-		stmt.execute();
-		stmt.close();		
-		conexao.close();
-	}
-	
-	/**
 	 * Recebe o id da carona e verifica se a carona é municipal.
 	 * 
 	 * @param idCarona id da carona
@@ -531,6 +482,8 @@ public class CaronaDAO {
 	 * @throws SQLException
 	 */
 	public boolean caronaMunicipal(String idCarona) throws SQLException{
+		logger.info("Executando método caronaMunicipal");
+		
 		boolean municipal = false;		
 		Connection conexao = new ConnectionFactory().getConnection();		
 		String sql = "SELECT municipal FROM carona WHERE id = '" + idCarona + "'";		
@@ -547,11 +500,55 @@ public class CaronaDAO {
 	}
 	
 	/**
+	 * Recebe o id da carona e marca a carona como preferencial.
+	 * 
+	 * @param idCarona id da carona
+	 * @throws SQLException
+	 */
+	public void definirCaronaPreferencial(String idCarona) throws SQLException{
+		logger.info("Executando método definirCaronaPreferencial");
+		
+		Connection conexao = new ConnectionFactory().getConnection();		
+		String sql = "UPDATE carona SET preferencial = true WHERE id = '" + idCarona + "'";	
+		PreparedStatement stmt = conexao.prepareStatement(sql);
+		stmt.execute();
+		stmt.close();		
+		conexao.close();
+	}
+	
+	/**
+	 * Recebe o id da carona e verifica se a carona é preferencial.
+	 * 
+	 * @param idCarona id da carona
+	 * @return true = carona preferencial, false = carona não preferencial
+	 * @throws SQLException
+	 */
+	public boolean isCaronaPreferencial(String idCarona) throws SQLException{
+		logger.info("Executando método isCaronaPreferencial");
+		
+		boolean preferencial = false;		
+		Connection conexao = new ConnectionFactory().getConnection();		
+		String sql = "SELECT preferencial FROM carona WHERE id = '" + idCarona + "'";		
+		PreparedStatement stmt = conexao.prepareStatement(sql);
+		ResultSet rs = stmt.executeQuery();		
+		while (rs.next()) {
+			preferencial = rs.getBoolean("preferencial");
+		}
+		stmt.execute();
+		stmt.close();		
+		conexao.close();
+		
+		return preferencial;
+	}
+	
+	/**
 	 * Apaga todas as caronas que estão armazenadas no banco de dados.
 	 * 
 	 * @throws SQLException 
 	 */
 	public void apagarCaronas() throws SQLException{
+		logger.info("Executando método apagarCaronas");
+		
 		Connection conexao1 = new ConnectionFactory().getConnection();
 		String sql1 = "DELETE FROM carona WHERE id > 0";
 		PreparedStatement stmt1 = conexao1.prepareStatement(sql1);

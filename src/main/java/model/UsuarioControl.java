@@ -145,8 +145,9 @@ public class UsuarioControl {
 	 * @throws SQLException
 	 */
 	public String getAtributoSolicitacao(String idSolicitacao, String atributo) throws SQLException{
-		SolicitacaoDAO s = SolicitacaoDAO.getInstance();
+		logger.info("Executando método getAtributoSolicitacao");
 		
+		SolicitacaoDAO s = SolicitacaoDAO.getInstance();		
 		if(atributo.equals("origem")){
 			return s.origemSolicitacao(idSolicitacao);
 		}
@@ -173,6 +174,8 @@ public class UsuarioControl {
 	 * @throws Exception
 	 */
 	public Usuario visualizarPerfil(String idSessao, String login) throws Exception{
+		logger.info("Executando método visualizarPerfil");
+		
 		UsuarioDAO u = UsuarioDAO.getInstance();
 		if(!u.loginExiste(login)){
 			Exception e = new Exception("Login inválido");
@@ -195,6 +198,8 @@ public class UsuarioControl {
 	 * @throws SQLException
 	 */
 	public String getAtributoPerfil(String login, String atributo) throws SQLException{
+		logger.info("Executando método getAtributoPerfil");
+		
 		UsuarioDAO u = UsuarioDAO.getInstance();
 		CaronaDAO c = CaronaDAO.getInstance();
 		SolicitacaoDAO s = SolicitacaoDAO.getInstance();
@@ -215,10 +220,10 @@ public class UsuarioControl {
 			return s.historicoVagasCaronas(login).toString().replaceAll(" ", "");
 		}
 		if(atributo.equals("caronas seguras e tranquilas")){
-			return c.caronasSeguras(login)+"";
+			return s.caronasSeguras(login)+"";
 		}
 		if(atributo.equals("caronas que não funcionaram")){
-			return c.caronasQueNaoFuncionou(login)+"";
+			return s.caronasQueNaoFuncionou(login)+"";
 		}
 		if(atributo.equals("faltas em vagas de caronas")){
 			return p.faltasEmCaronas(login)+"";
@@ -237,6 +242,8 @@ public class UsuarioControl {
 	 * @throws Exception
 	 */
 	public void desistirRequisicao(String idSessao, String idCarona, String idSolicitacao) throws Exception{
+		logger.info("Executando método desistirRequisicao");
+		
 		SolicitacaoDAO s = SolicitacaoDAO.getInstance();
 		if(!s.verificaSolicitacaoAceita(idSolicitacao)){
 			Exception e = new Exception("Solicitação inexistente");
@@ -256,6 +263,8 @@ public class UsuarioControl {
 	 * @throws SQLException
 	 */
 	public String getCaronaUsuario(String idSessao, int indexCarona) throws SQLException{
+		logger.info("Executando método getCaronaUsuario");
+		
 		CaronaDAO dao = CaronaDAO.getInstance();
 		return dao.getCaronaUsuario(idSessao, indexCarona);
 	}
@@ -268,6 +277,8 @@ public class UsuarioControl {
 	 * @throws SQLException
 	 */
 	public Map<String, Carona> getTodasCaronasUsuario(String idSessao) throws SQLException{
+		logger.info("Executando método getTodasCaronasUsuario");
+		
 		CaronaDAO dao = CaronaDAO.getInstance();
 		return dao.getTodasCaronasUsuario(idSessao);
 	}
@@ -280,6 +291,8 @@ public class UsuarioControl {
 	 * @throws SQLException
 	 */
 	public List<String> verificarMensagensPerfil(String idSessao) throws SQLException{
+		logger.info("Executando método verificarMensagensPerfil");
+		
 		MensagemDAO m = MensagemDAO.getInstance();
 		return m.mensagensPerfil(idSessao);
 	}

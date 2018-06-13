@@ -53,6 +53,8 @@ public class MensagemDAO {
 	 * @throws SQLException
 	 */
 	public List<String> mensagensPerfil(String idSessao) throws SQLException{
+		logger.info("Executando método mensagensPerfil");
+		
 		List<String> mensagens = new ArrayList<String>();
 		Connection conexao = new ConnectionFactory().getConnection();
 		String sql = "SELECT texto FROM mensagem WHERE idUsuario = '" + idSessao + "'";
@@ -76,8 +78,9 @@ public class MensagemDAO {
 	 * @throws SQLException
 	 */
 	public void enviaMensagemParaUsuario(Carona carona, String idSessao) throws SQLException{
-		UsuarioDAO u = UsuarioDAO.getInstance();
+		logger.info("Executando método enviaMensagemParaUsuario");
 		
+		UsuarioDAO u = UsuarioDAO.getInstance();		
 		String mensagem = "Carona cadastrada no dia " + carona.getData() + ", às " + carona.getHora() +
 						  " de acordo com os seus interesses registrados. Entrar em contato com " +
 						  u.emailUsuarioPorSessao(carona.getIdUsuario());
@@ -99,6 +102,8 @@ public class MensagemDAO {
 	 * @throws SQLException
 	 */
 	public void apagarMensagens() throws SQLException{
+		logger.info("Executando método apagarMensagens");
+		
 		Connection conexao1 = new ConnectionFactory().getConnection();
 		String sql1 = "DELETE FROM mensagem WHERE id > 0";
 		PreparedStatement stmt1 = conexao1.prepareStatement(sql1);

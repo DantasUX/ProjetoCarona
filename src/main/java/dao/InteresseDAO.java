@@ -62,6 +62,8 @@ public class InteresseDAO {
 	 * @throws SQLException
 	 */
 	public String cadastrarInteresse(String idSessao, String origem, String destino, String data, String horaInicio, String horaFim) throws SQLException{
+		logger.info("Executando método cadastrarInteresse");
+		
 		String idInteresse = "";
 		Connection conexao = new ConnectionFactory().getConnection();		
 		String sql = "INSERT INTO interesse " + "(origem,destino,data,horaInicio,horaFim, idUsuario) "
@@ -98,6 +100,8 @@ public class InteresseDAO {
 	 * @throws SQLException
 	 */
 	public List<String> verificaInteresse(Carona carona) throws SQLException{
+		logger.info("Executando método verificaInteresse");
+		
 		List<String> idUsuario = new ArrayList<String>();
 		Connection conexao = new ConnectionFactory().getConnection();
 		DateTimeFormatter formato1 = DateTimeFormatter.ofPattern("uuuu-MM-dd");		
@@ -132,6 +136,8 @@ public class InteresseDAO {
 	 * @throws SQLException
 	 */
 	public void apagarInteresses() throws SQLException{
+		logger.info("Executando método apagarInteresses");
+		
 		Connection conexao1 = new ConnectionFactory().getConnection();
 		String sql1 = "DELETE FROM interesse WHERE id > 0";
 		PreparedStatement stmt1 = conexao1.prepareStatement(sql1);

@@ -42,7 +42,7 @@ public class Motorista {
 		logger.info("Executando método cadastrarCarona");
 		
 		CaronaDAO c = CaronaDAO.getInstance();				
-		verificaEntradas(idSessao, origem, destino, data, hora, vagas);
+		verificaEntradas(idSessao, origem, destino, data, hora);
 		Carona carona = new Carona(origem, destino, validaData(data), validaHora(hora), validaVagas(vagas));		
 		carona.setIdUsuario(idSessao);
 		return c.cadastrarCarona(carona);
@@ -66,8 +66,32 @@ public class Motorista {
 		logger.info("Executando método cadastrarCaronaMunicipal");
 		
 		CaronaDAO c = CaronaDAO.getInstance();		
-		verificaEntradas(idSessao, origem, destino, data, hora, vagas);
+		verificaEntradas(idSessao, origem, destino, data, hora);
 		Carona carona = new Carona(origem, destino, cidade, validaData(data), validaHora(hora), validaVagas(vagas));		
+		carona.setIdUsuario(idSessao);
+		return c.cadastrarCarona(carona);
+	}
+	
+	/**
+	 * Recebe o id da sessão usuário, a origem, o destino, a data de ida, a data de volta, a hora e o mínimo de caroneiros,
+	 * cadastra uma carona relâmpago e retorna o id da carona relâmpago cadastrada.
+	 * 
+	 * @param idSessao id da sessão do usuário
+	 * @param origem origem da carona
+	 * @param destino destino da carona
+	 * @param dataIda data de ida da carona
+	 * @param dataVolta data de volta da carona
+	 * @param hora hora da carona
+	 * @param minimoCaroneiros mínimo de caroneiros necessários para a carona
+	 * @return id da carona
+	 * @throws Exception
+	 */
+	public String cadastrarCaronaRelampago(String idSessao, String origem, String destino, String dataIda, String dataVolta, String hora, String minimoCaroneiros) throws Exception{
+		logger.info("Executando método cadastrarCaronaRelampago");
+		
+		CaronaDAO c = CaronaDAO.getInstance();		
+		verificaEntradas(idSessao, origem, destino, dataIda, hora);
+		Carona carona = new Carona(origem, destino, validaData(dataIda), validaData(dataVolta), validaHora(hora), validaMinimoCaroneiros(minimoCaroneiros));
 		carona.setIdUsuario(idSessao);
 		return c.cadastrarCarona(carona);
 	}
@@ -85,7 +109,9 @@ public class Motorista {
 	 * @return id da carona
 	 * @throws Exception
 	 */
-	private void verificaEntradas(String idSessao, String origem, String destino, String data, String hora, String vagas) throws Exception{
+	private void verificaEntradas(String idSessao, String origem, String destino, String data, String hora) throws Exception{
+		logger.info("Executando método verificaEntradas");
+		
 		if(idSessao == null || idSessao.equals("")){
 			Exception e = new Exception("Sessão inválida");
 			logger.error("Sessão inválida - sessão: " + idSessao, e);
@@ -111,11 +137,7 @@ public class Motorista {
 			logger.error("Hora inválida - hora: " + hora, e);
 			throw e;
 		}
-		if(vagas == null){
-			Exception e = new Exception("Vaga inválida");
-			logger.error("Vaga inválida - vaga: " + vagas, e);
-			throw e;
-		}
+		
 		UsuarioDAO u = UsuarioDAO.getInstance();
 		if(!u.verificaSessao(idSessao)){
 			Exception e = new Exception("Sessão inexistente");
@@ -187,6 +209,30 @@ public class Motorista {
 	}
 	
 	/**
+	 * Recebe uma string minimoCaroneiros, a valida e a converte para int retornando o minimo de caroneiros em int.
+	 * 
+	 * @param minimoCaroneiros mínimo da caroneiros da carona relâmpago
+	 * @return mínimo de caroneiros no formato int
+	 * @throws Exception
+	 */
+	private int validaMinimoCaroneiros(String minimoCaroneiros) throws Exception{
+		logger.info("Executando método validaMinimoCaroneiros");		
+		
+		try{
+			int caroneiros = Integer.parseInt(minimoCaroneiros);
+			if(caroneiros == 0){
+				logger.error("Mínimo Caroneiros inválida - Mínimo Caroneiros: " + minimoCaroneiros, new Exception("Minimo Caroneiros inválido"));
+				throw new Exception("Minimo Caroneiros inválido");
+			}
+			return caroneiros;
+		}
+		catch(Exception e){
+			logger.error("Mínimo Caroneiros inválida - Mínimo Caroneiros: " + minimoCaroneiros, new Exception("Minimo Caroneiros inválido"));
+			throw new Exception("Minimo Caroneiros inválido");
+		}
+	}
+	
+	/**
 	 * Recebe o id da sessão do usuário, o id da carona, o id da sugestão e os pontos de encontro de resposta
 	 * do motorista. Após o caroneiro sugerir pontos de encontro, o motorista pode responder dizendo os pontos
 	 * de encontro dele.
@@ -198,6 +244,8 @@ public class Motorista {
 	 * @throws Exception
 	 */
 	public void responderSugestaoPontoEncontro(String idSessao, String idCarona, String idSugestao, String pontos) throws Exception{
+		logger.info("Executando método responderSugestaoPontoEncontro");
+		
 		if(pontos.equals("")){
 			Exception e = new Exception("Ponto Inválido");
 			logger.error("Ponto Inválido - pontos: " + pontos, e);
@@ -216,6 +264,8 @@ public class Motorista {
 	 * @throws Exception
 	 */
 	public void aceitarSolicitacaoPontoEncontro(String idSessao, String idSolicitacao) throws Exception{
+		logger.info("Executando método aceitarSolicitacaoPontoEncontro");
+		
 		SolicitacaoDAO s = SolicitacaoDAO.getInstance();
 		if(s.verificaSolicitacaoAceita(idSolicitacao)){
 			Exception e = new Exception("Solicitação inexistente");
@@ -234,6 +284,8 @@ public class Motorista {
 	 * @throws Exception
 	 */
 	public void rejeitarSolicitacao(String idSessao, String idSolicitacao) throws Exception{
+		logger.info("Executando método rejeitarSolicitacao");
+		
 		SolicitacaoDAO s = SolicitacaoDAO.getInstance();
 		if(s.verificaSolicitacaoRejeitada(idSolicitacao)){
 			Exception e = new Exception("Solicitação inexistente");
@@ -252,6 +304,8 @@ public class Motorista {
 	 * @throws SQLException
 	 */
 	public List<String> getSolicitacoesConfirmadas(String idSessao, String idCarona) throws SQLException{
+		logger.info("Executando método getSolicitacoesConfirmadas");
+		
 		SolicitacaoDAO s = SolicitacaoDAO.getInstance();
 		List<String> a = s.getSolicitacoesConfirmadas(idSessao, idCarona);
 		return a;
@@ -266,6 +320,8 @@ public class Motorista {
 	 * @throws SQLException
 	 */
 	public List<String> getSolicitacoesPendentes(String idSessao, String idCarona) throws SQLException{
+		logger.info("Executando método getSolicitacoesPendentes");
+		
 		SolicitacaoDAO s = SolicitacaoDAO.getInstance();
 		return s.getSolicitacoesPendentes(idSessao, idCarona);
 	}
@@ -279,6 +335,8 @@ public class Motorista {
 	 * @throws SQLException
 	 */
 	public List<String> getPontosEncontro(String idSessao, String idCarona) throws SQLException{
+		logger.info("Executando método getPontosEncontro");
+		
 		SolicitacaoDAO s = SolicitacaoDAO.getInstance();
 		return s.getPontosEncontro(idSessao, idCarona);
 	}
@@ -292,6 +350,8 @@ public class Motorista {
 	 * @throws SQLException
 	 */
 	public List<String> getPontosSugeridos(String idSessao, String idCarona) throws SQLException{
+		logger.info("Executando método getPontosSugeridos");
+		
 		SolicitacaoDAO s = SolicitacaoDAO.getInstance();
 		return s.getPontosSugeridos(idSessao, idCarona);
 	}
@@ -307,6 +367,8 @@ public class Motorista {
 	 * @throws Exception
 	 */
 	public void reviewVagaEmCarona(String idSessao, String idCarona, String loginCaroneiro, String review) throws Exception{
+		logger.info("Executando método reviewVagaEmCarona");
+		
 		SolicitacaoDAO s = SolicitacaoDAO.getInstance();
 		PresencaDAO dao = PresencaDAO.getInstance();
 		if(!s.vagaUsuarioCaronaPorLogin(idCarona, loginCaroneiro)){
@@ -325,5 +387,32 @@ public class Motorista {
 			logger.error("Opção inválida - review: " + review, e);
 			throw e;
 		}
+	}
+	
+	/**
+	 * Recebe o id da carona e marca a carona como preferencial.
+	 * 
+	 * @param idCarona id da carona
+	 * @throws SQLException
+	 */
+	public void definirCaronaPreferencial(String idCarona) throws SQLException{
+		logger.info("Executando método definirCaronaPreferencial");
+		
+		CaronaDAO c = CaronaDAO.getInstance();
+		c.definirCaronaPreferencial(idCarona);
+	}
+	
+	/**
+	 * Recebe o id da carona e retorna uma lista de usuários que tem preferência em uma carona.
+	 * 
+	 * @param idCarona id da carona
+	 * @return lista contendo os usuários que tem preferência em uma carona.
+	 * @throws SQLException
+	 */
+	public List<String> getUsuariosPreferenciaisCarona(String idCarona) throws SQLException{
+		logger.info("Executando método getUsuariosPreferenciaisCarona");
+		
+		SolicitacaoDAO dao = SolicitacaoDAO.getInstance();
+		return dao.getUsuariosPreferenciaisCarona();
 	}
 }

@@ -35,7 +35,7 @@ public class UsuarioDAO {
 	 * @return UsuarioDAO
 	 */
 	public static UsuarioDAO getInstance(){
-		logger.info("Abrindo conexão com a base de dados de usuarios");
+		logger.info("Abrindo conexão com a base de dados de usuario");
 		
 		if(instanciaUnica == null){
 			instanciaUnica = new UsuarioDAO();			
@@ -50,7 +50,7 @@ public class UsuarioDAO {
 	 * @throws SQLException 
 	 */
 	public void cadastrarUsuario(Usuario usuario) throws SQLException{
-		logger.info("Cadastrando usuario: " + usuario.getNome());
+		logger.info("Executando método cadastrarUsuario");
 		
 		Connection conexao = new ConnectionFactory().getConnection();		
 		String sql = "INSERT INTO usuario " + "(login,senha,nome,endereco,email) "
@@ -75,7 +75,7 @@ public class UsuarioDAO {
 	 * @throws SQLException 
 	 */
 	public String abrirSessao(String login, String senha) throws SQLException{
-		logger.info("Abrindo sessão login: " + login);		
+		logger.info("Executando método abrirSessao");		
 		
 		String sessao = "";		
 		Connection conexao = new ConnectionFactory().getConnection();
@@ -99,7 +99,7 @@ public class UsuarioDAO {
 	 * @throws SQLException 
 	 */
 	public String nomeUsuario(String login) throws SQLException{
-		logger.info("Retornando nome do usuário - login: " + login);		
+		logger.info("Executando método nomeUsuario");		
 		
 		return retornaInformacaoUsuario(login, "nome");
 	}
@@ -112,7 +112,7 @@ public class UsuarioDAO {
 	 * @throws SQLException 
 	 */
 	public String enderecoUsuario(String login) throws SQLException{
-		logger.info("Retornando endereço do usuário - login: " + login);	
+		logger.info("Executando método enderecoUsuario");	
 		
 		return retornaInformacaoUsuario(login, "endereco");
 	}
@@ -125,7 +125,7 @@ public class UsuarioDAO {
 	 * @throws SQLException
 	 */
 	public String emailUsuario(String login) throws SQLException{
-		logger.info("Retornando email do usuário - login: " + login);	
+		logger.info("Executando método emailUsuario");	
 		
 		return retornaInformacaoUsuario(login, "email");
 	}
@@ -138,6 +138,8 @@ public class UsuarioDAO {
 	 * @throws SQLException
 	 */
 	public String emailUsuarioPorSessao(String idSessao) throws SQLException{
+		logger.info("Executando método emailUsuarioPorSessao");
+		
 		String informacaoRetornada = "";		
 		Connection conexao = new ConnectionFactory().getConnection();
 		String sql = "SELECT email FROM usuario WHERE id = '" + idSessao + "'";
@@ -162,6 +164,8 @@ public class UsuarioDAO {
 	 * @throws SQLException
 	 */
 	private String retornaInformacaoUsuario(String login, String coluna) throws SQLException{
+		logger.info("Executando método retornaInformacaoUsuario");
+		
 		String informacaoRetornada = "";		
 		Connection conexao = new ConnectionFactory().getConnection();
 		String sql = "SELECT " + coluna + " FROM usuario WHERE login = '" + login + "'";
@@ -184,7 +188,7 @@ public class UsuarioDAO {
 	 * @throws SQLException 
 	 */
 	public boolean emailEstaCadastrado(String email) throws SQLException{
-		logger.info("Verificando se email já está cadastrado - email: " + email);		
+		logger.info("Executando método emailEstaCadastrado");		
 
 		return verificaInformacaoUsuario(email, "email");
 	}
@@ -197,7 +201,7 @@ public class UsuarioDAO {
 	 * @throws SQLException 
 	 */
 	public boolean loginExiste(String login) throws SQLException{
-		logger.info("Verificando se o login já existe - login: " + login);
+		logger.info("Executando método loginExiste");
 		
 		return verificaInformacaoUsuario(login, "login");
 	}
@@ -211,7 +215,8 @@ public class UsuarioDAO {
 	 * @throws SQLException
 	 */
 	public boolean senhaExiste(String login, String senha) throws SQLException{
-		logger.info("Verificando se a senha está correta - login: " + login);
+		logger.info("Executando método senhaExiste");
+		
 		Connection conexao = new ConnectionFactory().getConnection();
 		String sql = "SELECT login FROM usuario WHERE login = '" + login + "' AND senha = '" + senha + "'";
 		PreparedStatement stmt = conexao.prepareStatement(sql);
@@ -231,7 +236,7 @@ public class UsuarioDAO {
 	 * @throws SQLException 
 	 */
 	public boolean verificaSessao(String idSessao) throws SQLException{
-		logger.info("Verificando se a sessão é válida - id da sessão: " + idSessao);
+		logger.info("Executando método verificaSessao");
 		
 		return verificaInformacaoUsuario(idSessao, "id");
 	}
@@ -246,6 +251,8 @@ public class UsuarioDAO {
 	 * @throws SQLException
 	 */
 	private boolean verificaInformacaoUsuario(String informacao, String coluna) throws SQLException{
+		logger.info("Executando método verificaInformacaoUsuario");
+		
 		Connection conexao = new ConnectionFactory().getConnection();
 		String sql = "SELECT " + coluna + " FROM usuario WHERE " + coluna + " = '" + informacao + "'";
 		PreparedStatement stmt = conexao.prepareStatement(sql);
@@ -265,7 +272,9 @@ public class UsuarioDAO {
 	 * @return objeto usuario contendo as informações do perfil.
 	 * @throws Exception
 	 */
-	public Usuario perfil(String idSessao, String login) throws Exception{		
+	public Usuario perfil(String idSessao, String login) throws Exception{
+		logger.info("Executando método perfil");
+		
 		Usuario usuario = null;		
 		Connection conexao = new ConnectionFactory().getConnection();
 		String sql = "SELECT * FROM usuario WHERE id = '" + idSessao + "' OR login = '" + login + "'";
@@ -291,6 +300,8 @@ public class UsuarioDAO {
 	 * @throws SQLException
 	 */
 	public void apagarUsuarios() throws SQLException{
+		logger.info("Executando método apagarUsuarios");
+		
 		Connection conexao1 = new ConnectionFactory().getConnection();
 		String sql1 = "DELETE FROM usuario WHERE id > 0";
 		PreparedStatement stmt1 = conexao1.prepareStatement(sql1);
