@@ -11,35 +11,49 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import model.UsuarioControl;
 
 public class CadastroController {
 	@FXML
-    Button btn_cancelar;
+    private Button btn_cancelar;
 	@FXML
-	Button btn_limpar;
+	private Button btn_limpar;
 	@FXML
-	Button btn_ok;
+	private Button btn_ok;
 	@FXML
-	TextField nomeUsuario;
+	private TextField nomeUsuario;
 	@FXML
-	TextField enderecoUsuario;
+	private TextField enderecoUsuario;
 	@FXML
-	TextField TelUsuario;
+	private TextField emailUsuario;
 	@FXML
-	TextField emailUsuario;
+	private TextField loginUsuario;
 	@FXML
-	TextField loginUsuario;
+	private TextField senhaUsuario;
+	
+	private UsuarioControl usuario;
 
 
 	
 	@FXML
-	protected void cadastrarUsuario() {
-		System.out.println("cadastrou");
+	protected void cadastrarUsuario() throws Exception {
+		String nome = nomeUsuario.getText();
+		String endereco = enderecoUsuario.getText();
+		String email = emailUsuario.getText();
+		String login = loginUsuario.getText();
+		String senha = senhaUsuario.getText();
+		usuario = new UsuarioControl();
+		usuario.criarUsuario(login, senha, nome, endereco, email);
+		limparFormulario();
 	}
 	
 	@FXML
-	protected void liparFormulario() {
-		System.out.println("limpou");
+	protected void limparFormulario() {
+		nomeUsuario.setText("");
+		enderecoUsuario.setText("");
+		emailUsuario.setText("");
+		loginUsuario.setText("");
+		senhaUsuario.setText("");
 	}
 	
 	@FXML

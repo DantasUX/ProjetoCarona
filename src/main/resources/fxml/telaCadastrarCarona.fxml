@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="512.0" prefWidth="288.0" stylesheets="@application.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.CadastrarCaronaController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="512.0" prefWidth="288.0" stylesheets="@application.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.CadastrarCaronaController">
    <children>
       <Label layoutX="14.0" layoutY="19.0" text="Cadastrar Carona">
          <font>
@@ -16,21 +16,19 @@
          </font>
       </Label>
       <Separator layoutX="3.0" layoutY="51.0" prefHeight="7.0" prefWidth="282.0" />
-      <Button fx:id="btn_cancelar" layoutX="14.0" layoutY="440.0" mnemonicParsing="false" onAction="#cancelarCadastramento" prefHeight="39.0" prefWidth="82.0" text="Cancelar" />
-      <Button fx:id="btn_limpar" layoutX="103.0" layoutY="440.0" mnemonicParsing="false" onAction="#liparFormulario" prefHeight="39.0" prefWidth="82.0" text="Limpar" />
-      <Button fx:id="btn_ok" layoutX="192.0" layoutY="440.0" mnemonicParsing="false" onAction="#cadastrarUsuario" prefHeight="39.0" prefWidth="82.0" text="OK" textFill="#001b00" textOverrun="LEADING_ELLIPSIS" />
-      <TextField fx:id="nomeUsuario" layoutX="26.0" layoutY="116.0" prefHeight="25.0" prefWidth="236.0" />
+      <Button fx:id="btn_cancelar" layoutX="14.0" layoutY="440.0" mnemonicParsing="false" onAction="#cancelarCadastro" prefHeight="39.0" prefWidth="82.0" text="Cancelar" />
+      <Button fx:id="btn_limpar" layoutX="103.0" layoutY="440.0" mnemonicParsing="false" onAction="#limparFormulario" prefHeight="39.0" prefWidth="82.0" text="Limpar" />
+      <Button fx:id="btn_ok" layoutX="192.0" layoutY="440.0" mnemonicParsing="false" onAction="#cadastrarCarona" prefHeight="39.0" prefWidth="82.0" text="OK" textFill="#001b00" textOverrun="LEADING_ELLIPSIS" />
+      <TextField fx:id="origem" layoutX="26.0" layoutY="116.0" prefHeight="25.0" prefWidth="236.0" />
       <Label layoutX="26.0" layoutY="99.0" text="Local de origem" />
-      <TextField fx:id="enderecoUsuario" layoutX="26.0" layoutY="167.0" prefHeight="25.0" prefWidth="236.0" />
+      <TextField fx:id="destino" layoutX="26.0" layoutY="167.0" prefHeight="25.0" prefWidth="236.0" />
       <Label layoutX="26.0" layoutY="150.0" text="Local de destino" />
-      <TextField fx:id="TelUsuario" layoutX="26.0" layoutY="217.0" prefHeight="25.0" prefWidth="236.0" />
+      <DatePicker fx:id="data" layoutX="26.0" layoutY="219.0" prefHeight="25.0" prefWidth="236.0" />
       <Label layoutX="26.0" layoutY="201.0" text="Data" />
-      <TextField fx:id="emailUsuario" layoutX="26.0" layoutY="271.0" prefHeight="25.0" prefWidth="236.0" />
+      <TextField fx:id="hora" layoutX="26.0" layoutY="271.0" prefHeight="25.0" prefWidth="236.0" />
       <Label layoutX="26.0" layoutY="254.0" text="Hora" />
-      <TextField fx:id="loginUsuario" layoutX="26.0" layoutY="321.0" prefHeight="25.0" prefWidth="236.0" />
+      <TextField fx:id="vagas" layoutX="26.0" layoutY="321.0" prefHeight="25.0" prefWidth="236.0" />
       <Label layoutX="26.0" layoutY="304.0" text="Numero de Vagas" />
-      <Label layoutX="45.0" layoutY="491.0" prefHeight="17.0" prefWidth="198.0" text="Fábio Dantas - Yorras Gomes - UEPB" />
-      <Label layoutX="26.0" layoutY="363.0" text="Tipo de carona" />
-      <ComboBox layoutX="21.0" layoutY="397.0" prefHeight="28.0" prefWidth="242.0" />
+      <Label layoutX="45.0" layoutY="491.0" prefHeight="17.0" prefWidth="198.0" text="Fábio Dantas - Yorras Gomes - UEPB" />      
    </children>
 </AnchorPane>
