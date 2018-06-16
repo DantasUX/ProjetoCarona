@@ -3,14 +3,12 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="512.0" prefWidth="288.0" stylesheets="@application.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.CaronaViewPassageiroController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="512.0" prefWidth="288.0" stylesheets="@application.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.CaronaViewPassageiroController">
    <children>
       <Label layoutX="16.0" layoutY="11.0" text="Carona">
          <font>
@@ -21,19 +19,14 @@
       <Label layoutX="30.0" layoutY="490.0" prefHeight="18.0" prefWidth="223.0" text="Fábio Dantas - Yorras Gomes - UEPB" />
       <Separator layoutX="12.0" layoutY="159.0" prefHeight="7.0" prefWidth="282.0" />
       <Label layoutX="16.0" layoutY="61.0" text="Detalhes:" />
-      <TableView layoutX="9.0" layoutY="199.0" prefHeight="129.0" prefWidth="265.0">
-         <columns>
-            <TableColumn prefWidth="177.0" text="Caroneiro" />
-            <TableColumn prefWidth="87.0" text="Aceitar" />
-         </columns>
-      </TableView>
-      <Label layoutX="16.0" layoutY="175.0" text="Lista de passageiros" />
       <Label layoutX="13.0" layoutY="362.0" text="Sugerir de ponto de encontro" />
-      <Button layoutX="151.0" layoutY="452.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="121.0" text="Solicitar" />
-      <Button layoutX="9.0" layoutY="452.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="133.0" text="Voltar" />
+      <Button fx:id="btnSolicitar" layoutX="151.0" layoutY="452.0" mnemonicParsing="false" onAction="#solicitar" prefHeight="25.0" prefWidth="121.0" text="Solicitar" />
+      <Button layoutX="9.0" layoutY="452.0" mnemonicParsing="false" onAction="#voltar" prefHeight="25.0" prefWidth="133.0" text="Voltar" />
       <TextField layoutX="16.0" layoutY="388.0" prefHeight="25.0" prefWidth="193.0" />
       <Button layoutX="217.0" layoutY="388.0" mnemonicParsing="false" text="Sugerir" />
       <Separator layoutX="3.0" layoutY="345.0" prefHeight="7.0" prefWidth="282.0" />
       <Separator layoutX="2.0" layoutY="427.0" prefHeight="7.0" prefWidth="282.0" />
+      <TextArea fx:id="area" layoutX="13.0" layoutY="84.0" prefHeight="71.0" prefWidth="265.0" />
+      <Button layoutX="16.0" layoutY="183.0" mnemonicParsing="false" onAction="#avaliar" prefHeight="54.0" prefWidth="258.0" text="Avaliar Carona" />
    </children>
 </AnchorPane>

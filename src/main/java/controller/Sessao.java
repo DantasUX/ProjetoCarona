@@ -5,6 +5,7 @@ public class Sessao {
 	private static Sessao instanciaUnica = null;
 	
 	private String idSessao;
+	private String idCarona;
 	
 	private Sessao(){
 		
@@ -23,5 +24,13 @@ public class Sessao {
 
 	public void setIdSessao(String idSessao) {
 		this.idSessao = idSessao;
+	}
+
+	public String getIdCarona() {
+		return idCarona;
+	}
+
+	public void setIdCarona(String idCarona) {
+		this.idCarona = idCarona;
 	}
 }

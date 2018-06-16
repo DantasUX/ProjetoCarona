@@ -2,6 +2,8 @@ package controller;
 
 import java.io.IOException;
 
+import javax.swing.JOptionPane;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -50,7 +52,7 @@ public class LoginController {
 			atualizaTela.setScene(atualizarCena);
 			atualizaTela.show();
 		} catch (Exception e) {
-			
+			JOptionPane.showMessageDialog(null, e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 

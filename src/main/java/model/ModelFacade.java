@@ -8,7 +8,7 @@ import easyaccept.EasyAccept;
 
 /**
  * Classe que representa uma fachada para o sistema. As informações que vêm de fora do model ou saem, passam
- * por esssa fachada. Ela faz um controle do sistema.
+ * por essa fachada. Ela faz um controle do sistema.
  * 
  * @author Yorras Gomes, Fábio Dantas
  *
